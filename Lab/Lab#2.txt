@@ -1,0 +1,95 @@
+connect casteel/tiger
+SET ECHO ON
+START C:\DBM\Lab\Northwind_DB.txt
+SPOOL C:\DBM\Lab\Lab#2O.txt
+SET pagesize 50
+SET linesize 150
+--Q1
+COLUMN shipper FORMAT A35
+SELECT DISTINCT shipperid || ' - ' || companyname shipper
+FROM orders JOIN shippers ON shipvia = shipperid
+WHERE TO_CHAR(orderdate, 'Mon-yy') = 'Mar-11'
+  AND shipcity = 'London';
+--
+COLUMN shipper FORMAT A35
+SELECT DISTINCT shipperid || ' - ' || companyname shipper
+FROM orders JOIN shippers ON shipvia = shipperid
+WHERE EXTRACT(month FROM orderdate) = 3
+  AND EXTRACT(year FROM orderdate) = 2011
+  AND shipcity = 'London';
+--
+COLUMN shipper FORMAT A35
+SELECT DISTINCT shipperid || ' - ' || companyname shipper
+FROM orders JOIN shippers ON shipvia = shipperid
+WHERE TRUNC(orderdate, 'month') = '01-mar-11'
+  AND shipcity = 'London';
+--Testing
+SELECT sysdate from dual;
+SELECT TO_CHAR(sysdate,'mm/dd/yyy hh:mi am') "TIME" FROM dual;
+SELECT EXTRACT(month FROM sysdate) "Month" FROM dual;
+SELECT TO_CHAR(sysdate,'hh:mi am'),
+       TO_CHAR(TRUNC(sysdate),'hh:mi am'),
+	   TRUNC(sysdate,'Y')
+FROM   dual
+WHERE  TRUNC(sysdate) = '05-nov-2016';
+SELECT orderdate, TRUNC(orderdate,'Y')
+FROM   orders;
+--Q2
+SELECT categoryID || ' - ' || categoryName AS cat,  
+       COUNT(productID) AS productcount
+FROM products JOIN categories USING (categoryID)
+GROUP BY categoryName, categoryID
+UNION
+SELECT 'Total', COUNT(productID)
+FROM products;
+--
+SELECT categoryID || ' - ' || categoryName AS cat,  
+       COUNT(productID) AS productcount
+FROM products JOIN categories USING (categoryID)
+GROUP BY ROLLUP (categoryID || ' - ' || categoryName);
+--
+SELECT categoryID || ' - ' || categoryName AS cat,  
+       COUNT(productID) AS productcount
+FROM products JOIN categories USING (categoryID)
+GROUP BY GROUPING SETS ((categoryID || ' - ' || categoryName),());
+--Q3
+SELECT shippers.companyName,
+       COUNT(DISTINCT customerid) AS numcustomers,
+       COUNT(DISTINCT orderid) AS numorders,
+	   COUNT(productID) AS numproducts
+FROM orders JOIN customers USING (customerid)
+            JOIN shippers ON shipvia = shipperid
+			JOIN orderdetails USING (orderid)
+WHERE UPPER(country) = 'UK'
+GROUP BY shippers.companyName;
+--Q4
+SELECT supplierID, categoryName, COUNT(productID)
+FROM   suppliers JOIN products USING (supplierID)
+                 JOIN categories USING (categoryID)
+WHERE  supplierid < 11
+GROUP BY supplierID, categoryName
+ORDER BY supplierID;
+--Q5
+SELECT orderID, 
+       TO_CHAR(SUM((quantity * unitprice) * (1 - discount)), '$999,999.00')
+FROM   orderdetails
+GROUP BY orderID
+HAVING SUM((quantity * unitprice) * (1 - discount)) > 10000;
+--
+SELECT orderID, sum("Linecost")
+FROM(
+     SELECT orderID, productID,
+	        ((quantity * unitprice) * (1 - discount)) AS "Linecost"
+	 FROM   orderdetails
+)
+GROUP BY orderID
+HAVING SUM("Linecost") > 10000;
+--Q6
+COLUMN emp FORMAT A40
+SELECT LPAD(' ', LEVEL * 2) ||
+       employeeID || ' - ' || lastname || ', ' || firstname AS emp,
+       title, reportsto
+FROM   employees
+START WITH employeeID = 2
+CONNECT BY PRIOR employeeID = reportsto;
+SPOOL OUT

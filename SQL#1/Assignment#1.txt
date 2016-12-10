@@ -1,0 +1,342 @@
+SQL> SET pagesize 50
+SQL> SET linesize 150
+SQL> --Part1
+SQL> --Q1.1
+SQL> ALTER TABLE manufacturer ADD (website VARCHAR2(50));
+
+Table altered.
+
+SQL> UPDATE manufacturer SET website = 'http://www.apple.com' WHERE manuf_id = '567000';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.motorola.com/us' WHERE manuf_id = '567001';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.htc.com/us' WHERE manuf_id = '567002';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.samsung.com/us' WHERE manuf_id = '567003';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.LG.com/us' WHERE manuf_id = '567004';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://company.nokia.com' WHERE manuf_id = '567005';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://us.blackberry.com/home.html' WHERE manuf_id = '567006';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.otterbox.com' WHERE manuf_id = '567007';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'https://www.pielframa.com/es/index.htm' WHERE manuf_id = '567008';
+
+1 row updated.
+
+SQL> UPDATE manufacturer SET website = 'http://www.microsoft.com/en-us' WHERE manuf_id = '567009';
+
+1 row updated.
+
+SQL> --Q1.2
+SQL> INSERT INTO product VALUES ('89001','iPhone','567000','649','749','CellPhone');
+
+1 row created.
+
+SQL> INSERT INTO product VALUES ('89002','iPhone','567000','769','869','CellPhone');
+
+1 row created.
+
+SQL> INSERT INTO product VALUES ('89003','Galaxy','567003','645','695','CellPhone');
+
+1 row created.
+
+SQL> INSERT INTO cellphone VALUES ('89001','iPhone 7','4G','iOS 10.0');
+
+1 row created.
+
+SQL> INSERT INTO cellphone VALUES ('89002','iPhone 7 Plus','4G','iOS 10.0');
+
+1 row created.
+
+SQL> INSERT INTO cellphone VALUES ('89003', 'Galaxy S7','4G','Andriod');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89003','87647');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89003','87648');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89002','87548');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89002','11256');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89001','87459');
+
+1 row created.
+
+SQL> INSERT INTO phone_access VALUES ('89001','11256');
+
+1 row created.
+
+SQL> --Part2
+SQL> --Q2.1
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Model FORMAT A20
+SQL> COLUMN Manuf_Name FORMAT A15
+SQL> COLUMN PaidPrice FORMAT $9,999
+SQL> SELECT DISTINCT ID || ' - ' || Lname || ', ' || Fname AS "Customer", Model, PaidPrice, manufacturer.Manuf_ID, Manuf_Name
+  2  FROM customer JOIN contract ON customer.ID = contract.Customer_ID
+  3    JOIN contract_cellphone cc ON cc.Contract_ID = contract.Contract_ID
+  4    JOIN cellphone ON cellphone.Phone_ID = cc.Phone_ID
+  5    JOIN product ON product.Product_ID = cellphone.Phone_ID
+  6    JOIN manufacturer ON manufacturer.Manuf_ID = product.Manuf_ID
+  7  WHERE PaidPrice > 300
+  8    AND End_Date IS NULL
+  9  ORDER BY Manuf_ID, Model;
+
+Customer                       MODEL                PAIDPRICE   MANUF_ID MANUF_NAME                                                                   
+------------------------------ -------------------- --------- ---------- ---------------                                                              
+1008 - Blayney, Alessandro     iPhone 5c                 $350     567000 Apple                                                                        
+1011 - Dutton, Lettie          iPhone 5c                 $350     567000 Apple                                                                        
+1016 - Jones, Zach             iPhone 5c                 $350     567000 Apple                                                                        
+1020 - Freeman, Mary           iPhone 5c                 $360     567000 Apple                                                                        
+1015 - Wolfe, Emily            iPhone 6S Plus            $749     567000 Apple                                                                        
+1001 - Smith, Peter            iPhone 6S Plus            $755     567000 Apple                                                                        
+1002 - Jones, Cynthia          Droid 2                   $320     567001 Motorola                                                                     
+1015 - Wolfe, Emily            Droid 2                   $320     567001 Motorola                                                                     
+1001 - Smith, Peter            Galaxy S II Plus          $345     567003 Samsung                                                                      
+1003 - Archer, Simons          Galaxy S II Plus          $345     567003 Samsung                                                                      
+1014 - Whittaker, John         Galaxy S II Plus          $345     567003 Samsung                                                                      
+1009 - Lopez, Sasha            Galaxy S4 GT-i9500        $320     567003 Samsung                                                                      
+1003 - Archer, Simons          Galaxy S4 GT-i9500        $350     567003 Samsung                                                                      
+1013 - Banerjee, Arun          Galaxy S5                 $500     567003 Samsung                                                                      
+1013 - Banerjee, Arun          Galaxy S6                 $580     567003 Samsung                                                                      
+1001 - Smith, Peter            Galaxy S6                 $590     567003 Samsung                                                                      
+
+16 rows selected.
+
+SQL> --Q2.2
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Start_date FORMAT A15
+SQL> COLUMN End_date FORMAT A15
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname
+  2     AS "Customer",
+  3     Start_Date, End_Date
+  4  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+  5  WHERE  vPlan_ID IS NOT NULL
+  6  INTERSECT
+  7  SELECT ID || ' - ' || Lname || ', ' || Fname
+  8     AS "Customer",
+  9     Start_Date, End_Date
+ 10  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+ 11  WHERE  tPlan_ID IS NOT NULL
+ 12  INTERSECT
+ 13  SELECT ID || ' - ' || Lname || ', ' || Fname
+ 14     AS "Customer",
+ 15     Start_Date, End_Date
+ 16  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+ 17  WHERE  dPlan_ID IS NOT NULL;
+
+Customer                       START_DATE      END_DATE                                                                                               
+------------------------------ --------------- ---------------                                                                                        
+1001 - Smith, Peter            02-DEC-13       15-DEC-14                                                                                              
+1001 - Smith, Peter            15-DEC-14                                                                                                              
+1003 - Archer, Simons          06-AUG-14                                                                                                              
+1004 - Lee, Mimi               04-NOV-14       03-JAN-16                                                                                              
+1005 - Drake, Lu               01-DEC-14                                                                                                              
+1007 - Jacob, Charlie          05-MAR-15                                                                                                              
+1010 - Mohammed, Sharif        05-DEC-14                                                                                                              
+1011 - Dutton, Lettie          09-JUN-14                                                                                                              
+1013 - Banerjee, Arun          01-DEC-14       04-FEB-16                                                                                              
+1013 - Banerjee, Arun          04-FEB-16                                                                                                              
+1014 - Whittaker, John         24-DEC-14                                                                                                              
+1015 - Wolfe, Emily            15-AUG-14       02-FEB-15                                                                                              
+1015 - Wolfe, Emily            15-AUG-14                                                                                                              
+1015 - Wolfe, Emily            02-FEB-15                                                                                                              
+1017 - Jefferson, Alvin        01-JAN-15                                                                                                              
+1019 - Diego, Sandy            20-SEP-14                                                                                                              
+1020 - Freeman, Mary           25-DEC-15                                                                                                              
+
+17 rows selected.
+
+SQL> --Q2.3
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer"
+  2  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+  3  LEFT OUTER JOIN voice ON voice.vPlan_ID = contract.vPlan_ID
+  4  LEFT OUTER JOIN text ON text.tPlan_ID = contract.tPlan_ID
+  5  LEFT OUTER JOIN data ON data.dPlan_ID = contract.dPlan_ID
+  6  WHERE  contract.End_Date IS NULL
+  7    AND  0.1 < ANY(voice.OverageFee, text.MmsOverage,text.TextOverage, data.OverageFee);
+
+Customer                                                                                                                                              
+------------------------------                                                                                                                        
+1013 - Banerjee, Arun                                                                                                                                 
+1015 - Wolfe, Emily                                                                                                                                   
+1020 - Freeman, Mary                                                                                                                                  
+1019 - Diego, Sandy                                                                                                                                   
+1007 - Jacob, Charlie                                                                                                                                 
+
+SQL> --Q2.4
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Model FORMAT A20
+SQL> SELECT DISTINCT ID || ' - ' || Lname || ', ' || Fname AS "Customer", cellphone.Phone_ID, Model
+  2  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+  3  JOIN contract_cellphone cc ON cc.Contract_ID = contract.Contract_ID
+  4  JOIN cellphone ON cellphone.Phone_ID = cc.Phone_ID
+  5  WHERE  dPlan_ID IS NOT NULL
+  6    AND  NetworkTechnology = '3G';
+
+Customer                         PHONE_ID MODEL                                                                                                       
+------------------------------ ---------- --------------------                                                                                        
+1003 - Archer, Simons               11243 Galaxy S II Plus                                                                                            
+1015 - Wolfe, Emily                 58667 Droid 2                                                                                                     
+1013 - Banerjee, Arun               58667 Droid 2                                                                                                     
+1001 - Smith, Peter                 65267 Bold 9780                                                                                                   
+1007 - Jacob, Charlie               65267 Bold 9780                                                                                                   
+1014 - Whittaker, John              11243 Galaxy S II Plus                                                                                            
+
+6 rows selected.
+
+SQL> --Q2.5
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Address FORMAT A50
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer",
+  2     Street || ', ' || CITY || ', ' || State || ', ' || ZipCode AS "Address",
+  3     Phone
+  4  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+  5  JOIN contract_cellphone cc ON cc.Contract_ID = contract.Contract_ID
+  6  JOIN cellphone ON cellphone.Phone_ID = cc.Phone_ID
+  7  WHERE  dPlan_ID IS NULL
+  8    AND  NetworkTechnology <> 'NO';
+
+Customer                       Address                                            PHONE                                                               
+------------------------------ -------------------------------------------------- ------------                                                        
+1001 - Smith, Peter            2201 Baker St, Pittsburgh, PA, 15212               303-539-5395                                                        
+1006 - Simons, Thomas          123 Hershey Way, Erie, PA, 16501                   813-786-4003                                                        
+1012 - Long, David             101 Broadway, New York City, NY, 10010             212-434-7898                                                        
+1002 - Jones, Cynthia          4431 Main Street, Los Angeles, CA, 90210           415-334-5566                                                        
+1018 - Garcia, Juan            43 W. 4th Street, New York City, NY, 10039         201-456-3211                                                        
+1009 - Lopez, Sasha            547 Palo Alto Drive, San Jose, CA, 91745           949-098-3453                                                        
+1005 - Drake, Lu               1667 Bleeker Street, New York City, NY, 10020      216-675-3453                                                        
+1008 - Blayney, Alessandro     12 Liberty Way, Philadelphia, PA, 19118            512-009-8798                                                        
+
+8 rows selected.
+
+SQL> --Q2.6
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN NetworkTechnology FORMAT A20
+SQL> COLUMN Model FORMAT A20
+SQL> COLUMN Manuf_Name FORMAT A15
+SQL> SELECT cellphone.Phone_ID, Model, NetworkTechnology, OS, Manuf_Name
+  2  FROM   customer JOIN contract ON customer.ID = contract.Customer_ID
+  3  JOIN contract_cellphone cc ON cc.Contract_ID = contract.Contract_ID
+  4  JOIN cellphone ON cellphone.Phone_ID = cc.Phone_ID
+  5  JOIN product ON product.Product_ID = cellphone.Phone_ID
+  6  JOIN manufacturer ON manufacturer.Manuf_ID = Product.Manuf_ID
+  7  WHERE  Fname = 'Peter'
+  8    AND  Lname = 'Smith';
+
+  PHONE_ID MODEL                NETWORKTECHNOLOGY    OS                   MANUF_NAME                                                                  
+---------- -------------------- -------------------- -------------------- ---------------                                                             
+     87880 iPhone 6S Plus       4G                   iOS 9.2              Apple                                                                       
+     87580 Galaxy S6            4G                   Android              Samsung                                                                     
+     11243 Galaxy S II Plus     3G                   Android              Samsung                                                                     
+     65267 Bold 9780            3G                   Blackberry           Blackberry                                                                  
+     65267 Bold 9780            3G                   Blackberry           Blackberry                                                                  
+     65267 Bold 9780            3G                   Blackberry           Blackberry                                                                  
+
+6 rows selected.
+
+SQL> --Q2.7
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Address FORMAT A50
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer",
+  2     Street || ', ' || CITY || ', ' || State || ', ' || ZipCode AS "Address"
+  3  FROM   customer JOIN contract ON contract.Customer_ID = customer.ID
+  4  JOIN contract_cellphone cc ON cc.Contract_ID = contract.Contract_ID
+  5  JOIN cellphone ON cellphone.Phone_ID = cc.Phone_ID
+  6  WHERE  dPlan_ID IS NULL
+  7    AND  City = 'Erie'
+  8    AND  State = 'PA'
+  9    AND  NetworkTechnology = '4G';
+
+Customer                       Address                                                                                                                
+------------------------------ --------------------------------------------------                                                                     
+1006 - Simons, Thomas          123 Hershey Way, Erie, PA, 16501                                                                                       
+
+SQL> --Q2.8
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Name FORMAT A20
+SQL> COLUMN hasvoicemail FORMAT A15
+SQL> COLUMN hasthreeway FORMAT A15
+SQL> COLUMN Overagefee FORMAT $90.90
+SQL> SELECT Lname || ', ' || Fname AS "Name", voice.vPlan_ID, NumMin, hasvoicemail, hasthreeway, Overagefee
+  2  FROM   customer JOIN contract ON contract.Customer_ID = customer.ID
+  3  JOIN voice ON voice.vPlan_ID = contract.vPlan_ID
+  4  WHERE  City = 'New York City'
+  5    AND  contract.end_date IS NULL;
+
+Name                   VPLAN_ID     NUMMIN HASVOICEMAIL    HASTHREEWAY     OVERAGEFEE                                                                 
+-------------------- ---------- ---------- --------------- --------------- ----------                                                                 
+Long, David              109805        600 Yes             No                   $0.05                                                                 
+Drake, Lu                109809       1200 No              No                   $0.10                                                                 
+Garcia, Juan             109813        900 No              Yes                  $0.05                                                                 
+
+SQL> --Q2.9
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer", dataLimit AS PLanLimit, 'DATA' AS "Type"
+  2  FROM   customer JOIN contract ON contract.Customer_ID = customer.ID
+  3  JOIN data ON data.dPlan_ID = contract.dPlan_ID
+  4  WHERE  contract.dPlan_ID IS NOT NULL
+  5    AND  contract.start_date >= SYSDATE - 365
+  6    AND  contract.end_date IS NULL
+  7  UNION
+  8  SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer", textLimit AS PlanLimit, 'TEXT' AS "Type"
+  9  FROM   customer JOIN contract ON contract.Customer_ID = customer.ID
+ 10  JOIN text ON text.tPlan_ID = contract.tPlan_ID
+ 11  WHERE  contract.tPlan_ID IS NOT NULL
+ 12    AND  contract.start_date >= SYSDATE - 365
+ 13    AND  contract.end_date IS NULL;
+
+Customer                        PLANLIMIT Type                                                                                                        
+------------------------------ ---------- ----                                                                                                        
+1013 - Banerjee, Arun                2500 TEXT                                                                                                        
+1013 - Banerjee, Arun                3000 DATA                                                                                                        
+1020 - Freeman, Mary                 2500 TEXT                                                                                                        
+1020 - Freeman, Mary                 3000 DATA                                                                                                        
+
+SQL> SPOOL OUT

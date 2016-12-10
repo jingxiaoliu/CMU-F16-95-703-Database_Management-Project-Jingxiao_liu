@@ -1,0 +1,228 @@
+SQL> SELECT department, employee, supervisor, training, score
+  2  FROM employeeTrainingSummary;
+
+Wed Nov 30                                                                                                                                   page    1
+                                                                  Employee Trainings
+
+Department                Employee                       Supervisor                     Training                                                      
+Number/Name               Number/Name                    Number/Name                    Title/Semester/Grade                                 GPA      
+------------------------- ------------------------------ ------------------------------ -------------------------------------------------- -----      
+Accounting                10018 - Bamforth, Gabriel      Supervisor                     Economic Analysis, Spring 2013, A                   4.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      4.00      
+                          Number of Classes (Emp)                                                                                        1            
+                                                                                                                                                      
+                          10019 - Cheng, Perry           10018 - Bamforth, Gabriel      Economic Analysis, Spring 2013, B                   3.00      
+                                                                                        Economic Analysis, Spring 2015, C-                  1.67      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      2.34      
+                          Number of Classes (Emp)                                                                                        2            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              2.89      
+Number of Classes (Dept)                                                                                                                 3            
+                                                                                                                                                      
+Analytics                 10022 - Clarke, Dylan          Supervisor                     Financial Accounting, Fall 2016, B                  3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.00      
+                          Number of Classes (Emp)                                                                                        1            
+                                                                                                                                                      
+                          10023 - Cruz, Julissa          10022 - Clarke, Dylan          Professional Speaking, Fall 2016, B+                3.33      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.33      
+                          Number of Classes (Emp)                                                                                        1            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              3.17      
+Number of Classes (Dept)                                                                                                                 2            
+                                                                                                                                                      
+Consulting                10020 - Chirinos, Renato       Supervisor                     No training                                                   
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                                
+                          Number of Classes (Emp)                                                                                        0            
+                                                                                                                                                      
+                          10021 - Chukwuma, Obianozo     10020 - Chirinos, Renato       No training                                                   
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                                
+                                                      END of Employee Training Information Report                                       Run By: Team#1
+
+Wed Nov 30                                                                                                                                   page    2
+                                                                  Employee Trainings
+
+Department                Employee                       Supervisor                     Training                                                      
+Number/Name               Number/Name                    Number/Name                    Title/Semester/Grade                                 GPA      
+------------------------- ------------------------------ ------------------------------ -------------------------------------------------- -----      
+                          Number of Classes (Emp)                                                                                        0            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                                        
+Number of Classes (Dept)                                                                                                                 0            
+                                                                                                                                                      
+Customer Service          10008 - Chen, Dihong           Supervisor                     No training                                                   
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                                
+                          Number of Classes (Emp)                                                                                        0            
+                                                                                                                                                      
+                          10009 - Chen, Yiming           10008 - Chen, Dihong           Financial Accounting, Fall 2016, R                  0.00      
+                                                                                        Machine Learning, Fall 2014, C                      2.00      
+                                                                                        Marketing Digital Media, Fall 2016, A               4.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      2.00      
+                          Number of Classes (Emp)                                                                                        3            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              2.00      
+Number of Classes (Dept)                                                                                                                 3            
+                                                                                                                                                      
+Finance                   10010 - Dennin, Luke           Supervisor                     Machine Learning, Fall 2014, B                      3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.00      
+                          Number of Classes (Emp)                                                                                        1            
+                                                                                                                                                      
+                          10011 - Feng, Christopher      10010 - Dennin, Luke           Database Mngt, Spring 2015, R                       0.00      
+                                                                                        Database Mngt, Spring 2016, B                       3.00      
+                                                                                        Marketing Digital Media, Fall 2015, C-              1.67      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      1.56      
+                          Number of Classes (Emp)                                                                                        3            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              1.92      
+Number of Classes (Dept)                                                                                                                 4            
+                                                      END of Employee Training Information Report                                       Run By: Team#1
+
+Wed Nov 30                                                                                                                                   page    3
+                                                                  Employee Trainings
+
+Department                Employee                       Supervisor                     Training                                                      
+Number/Name               Number/Name                    Number/Name                    Title/Semester/Grade                                 GPA      
+------------------------- ------------------------------ ------------------------------ -------------------------------------------------- -----      
+                                                                                                                                                      
+Human Resources           10004 - Aravind, Pritham       Supervisor                     Economic Analysis, Spring 2014, A                   4.00      
+                                                                                        Marketing Digital Media, Fall 2014, A               4.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      4.00      
+                          Number of Classes (Emp)                                                                                        2            
+                                                                                                                                                      
+                          10005 - Bakert, Andrew         10004 - Aravind, Pritham       Economic Analysis, Spring 2014, B                   3.00      
+                                                                                        Financial Accounting, Fall 2014, B                  3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.00      
+                          Number of Classes (Emp)                                                                                        2            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              3.50      
+Number of Classes (Dept)                                                                                                                 4            
+                                                                                                                                                      
+Manufacturing             10016 - Zhao, Xin              Supervisor                     No training                                                   
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                                
+                          Number of Classes (Emp)                                                                                        0            
+                                                                                                                                                      
+                          10017 - Alla, Sharan           10016 - Zhao, Xin              Professional Writing, Fall 2015, R                  0.00      
+                                                                                        Professional Writing, Fall 2016, B                  3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      1.50      
+                          Number of Classes (Emp)                                                                                        2            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              1.50      
+Number of Classes (Dept)                                                                                                                 2            
+                                                                                                                                                      
+Marketing                 10001 - Liu, Jingxiao          Supervisor                     Database Mngt, Spring 2014, C-                      1.67      
+                                                                                        Database Mngt, Spring 2016, A                       4.00      
+                                                                                        Financial Accounting, Fall 2013, B                  3.00      
+                                                                                        Marketing Digital Media, Fall 2013, A               4.00      
+                                                                                        Marketing Digital Media, Fall 2014, A               4.00      
+                                                      END of Employee Training Information Report                                       Run By: Team#1
+
+Wed Nov 30                                                                                                                                   page    4
+                                                                  Employee Trainings
+
+Department                Employee                       Supervisor                     Training                                                      
+Number/Name               Number/Name                    Number/Name                    Title/Semester/Grade                                 GPA      
+------------------------- ------------------------------ ------------------------------ -------------------------------------------------- -----      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.33      
+                          Number of Classes (Emp)                                                                                        5            
+                                                                                                                                                      
+Marketing                 10002 - Agarwal, Ajay          10001 - Liu, Jingxiao          Financial Accounting, Fall 2014, B                  3.00      
+                                                                                        Telecommunications Management, Spring 2016, A-      3.67      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.34      
+                          Number of Classes (Emp)                                                                                        2            
+                                                                                                                                                      
+                          10003 - Ahn, Jungho            10001 - Liu, Jingxiao          Principles of Finance, Spring 2014, B+              3.33      
+                                                                                        Professional Speaking, Fall 2014, R                 0.00      
+                                                                                        Professional Speaking, Fall 2015, B+                3.33      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      2.22      
+                          Number of Classes (Emp)                                                                                        3            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              3.00      
+Number of Classes (Dept)                                                                                                                10            
+                                                                                                                                                      
+Production                10012 - Zhu, Di                Supervisor                     Financial Accounting, Fall 2015, B                  3.00      
+                                                                                        Machine Learning, Fall 2013, R                      0.00      
+                                                                                        Machine Learning, Fall 2014, A                      4.00      
+                                                                                        Telecommunications Management, Spring 2015, A-      3.67      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      2.67      
+                          Number of Classes (Emp)                                                                                        4            
+                                                                                                                                                      
+                          10013 - Zhou, Jiali            10012 - Zhu, Di                Machine Learning, Fall 2013, B                      3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.00      
+                          Number of Classes (Emp)                                                                                        1            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              2.73      
+Number of Classes (Dept)                                                                                                                 5            
+                                                      END of Employee Training Information Report                                       Run By: Team#1
+
+Wed Nov 30                                                                                                                                   page    5
+                                                                  Employee Trainings
+
+Department                Employee                       Supervisor                     Training                                                      
+Number/Name               Number/Name                    Number/Name                    Title/Semester/Grade                                 GPA      
+------------------------- ------------------------------ ------------------------------ -------------------------------------------------- -----      
+                                                                                                                                                      
+Research and Development  10014 - Zhao, Yusheng          Supervisor                     Financial Accounting, Fall 2013, B                  3.00      
+                                                                                        Marketing Digital Media, Fall 2013, B-              2.67      
+                                                                                        Marketing Digital Media, Fall 2015, A               4.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      3.22      
+                          Number of Classes (Emp)                                                                                        3            
+                                                                                                                                                      
+                          10015 - Zhao, Yiren            10014 - Zhao, Yusheng          Economic Analysis, Spring 2015, B                   3.00      
+                                                                                        Financial Accounting, Fall 2015, R                  0.00      
+                                                                                        Financial Accounting, Fall 2016, B                  3.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      2.00      
+                          Number of Classes (Emp)                                                                                        3            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              2.61      
+Number of Classes (Dept)                                                                                                                 6            
+                                                                                                                                                      
+Sales                     10006 - Arora, Rajat           Supervisor                     Database Mngt, Spring 2016, A                       4.00      
+                                                                                        Marketing Digital Media, Fall 2016, R               0.00      
+                                                                                        Principles of Finance, Spring 2014, R               0.00      
+                                                                                        Principles of Finance, Spring 2015, C               2.00      
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                      1.50      
+                          Number of Classes (Emp)                                                                                        4            
+                                                                                                                                                      
+                          10007 - Chao, Shucheng         10006 - Arora, Rajat           No training                                                   
+                          ****************************** ****************************** -------------------------------------------------- -----      
+                          Employee GPA                                                                                                                
+                          Number of Classes (Emp)                                                                                        0            
+                                                                                                                                                      
+*************************                                                               -------------------------------------------------- -----      
+Department GPA                                                                                                                              1.50      
+Number of Classes (Dept)                                                                                                                 4            
+                                                                                                                                                      
+
+                                                      END of Employee Training Information Report                                       Run By: Team#1
+SQL> SPOOL OFF

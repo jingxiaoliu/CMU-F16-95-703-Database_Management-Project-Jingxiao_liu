@@ -1,0 +1,405 @@
+DROP TABLE contract_cellphone CASCADE CONSTRAINTS; 
+DROP TABLE phone_access       CASCADE CONSTRAINTS; 
+DROP TABLE cellphone          CASCADE CONSTRAINTS; 
+DROP TABLE accessory          CASCADE CONSTRAINTS; 
+DROP TABLE product            CASCADE CONSTRAINTS; 
+DROP TABLE manufacturer       CASCADE CONSTRAINTS; 
+DROP TABLE contract           CASCADE CONSTRAINTS; 
+DROP TABLE voice              CASCADE CONSTRAINTS; 
+DROP TABLE text               CASCADE CONSTRAINTS; 
+DROP TABLE data               CASCADE CONSTRAINTS; 
+DROP TABLE plan               CASCADE CONSTRAINTS; 
+DROP TABLE customer           CASCADE CONSTRAINTS; 
+
+CREATE TABLE customer 
+(ID          NUMBER(5), 
+ LName       VARCHAR2(30), 
+ FName       VARCHAR2(30), 
+ street      VARCHAR2(30), 
+ city        VARCHAR2(30), 
+ zipcode     NUMBER(5),
+ state       VARCHAR2(2), 
+ phone       VARCHAR2(12), 
+ CreditScore NUMBER(3), 
+ credit_org  VARCHAR2(30), 
+ CS_date     DATE, 
+ CONSTRAINT customer_ID_PK PRIMARY KEY (ID)  ); 
+  
+CREATE TABLE PLAN 
+(plan_ID     NUMBER(6), 
+ Start_Date  DATE DEFAULT SYSDATE, 
+ End_Date    DATE, 
+ BasePrice   NUMBER(3), 
+ plan_type   VARCHAR2(5), 
+ CONSTRAINT plan_planID_PK PRIMARY KEY (plan_ID), 
+ CONSTRAINT plan_dates_CK    CHECK (Start_Date <= End_Date), 
+ CONSTRAINT plan_plantype_CK CHECK (plan_type IN ('voice', 'data', 'text') AND Plan_type IS NOT NULL)   ); 
+
+CREATE TABLE VOICE 
+(vplan_ID     NUMBER(6), 
+ nummin       NUMBER(5), 
+ hasvoicemail VARCHAR2(3), 
+ hasthreeway  VARCHAR2(3), 
+ overagefee   NUMBER(4,2) DEFAULT 0, 
+ CONSTRAINT voice_vplanID_PK PRIMARY KEY (vplan_ID), 
+ CONSTRAINT voice_vplanID_FK FOREIGN KEY (vplan_ID) REFERENCES plan (plan_ID), 
+ CONSTRAINT voice_hasvoicemail_CK CHECK (hasvoicemail IN ('Yes', 'No') AND hasvoicemail IS NOT NULL), 
+ CONSTRAINT voice_hasthreeway_CK  CHECK (hasthreeway  IN ('Yes', 'No') AND hasthreeway  IS NOT NULL)   ); 
+  
+CREATE TABLE TEXT 
+(tplan_ID    NUMBER(6), 
+ textlimit   NUMBER(5), 
+ hasmms      VARCHAR2(3), 
+ mmsoverage  NUMBER(4,2) DEFAULT 0, 
+ textoverage NUMBER(4,2) DEFAULT 0, 
+ CONSTRAINT text_tplanID_PK PRIMARY KEY (tplan_ID), 
+ CONSTRAINT text_tplanID_FK FOREIGN KEY (tplan_ID) REFERENCES plan (plan_ID), 
+ CONSTRAINT text_hasmms_CK  CHECK (hasmms IN ('Yes', 'No') AND hasmms IS NOT NULL)   ); 
+
+CREATE TABLE DATA 
+(dPlan_ID             NUMBER(6), 
+ dataLimit            NUMBER(5), 
+ NetworkTechnology    VARCHAR2(2), 
+ overagefee NUMBER(4,2) DEFAULT 0, 
+ CONSTRAINT data_dplanID_PK PRIMARY KEY (dplan_ID), 
+ CONSTRAINT data_dplanID_FK FOREIGN KEY (dplan_ID) REFERENCES plan (plan_ID),
+ CONSTRAINT data_network_CK CHECK (NetworkTechnology IN ('No','2G', '3G', '4G') AND NetworkTechnology IS NOT NULL)   );
+  
+CREATE TABLE CONTRACT 
+(contract_ID      NUMBER(5), 
+ customer_ID      NUMBER(5) NOT NULL, 
+ vPlan_ID         NUMBER(6) NOT NULL, 
+ tPlan_ID         NUMBER(6), 
+ dPlan_ID         NUMBER(6), 
+ Start_Date       DATE DEFAULT SYSDATE, 
+ End_Date         DATE, 
+ discountperc     NUMBER(2), 
+ CONSTRAINT contract_ID_PK PRIMARY KEY (contract_ID), 
+ CONSTRAINT contract_customerID_FK FOREIGN KEY (customer_ID) REFERENCES customer (ID), 
+ CONSTRAINT contract_voice_FK      FOREIGN KEY (vplan_ID)    REFERENCES voice (vplan_ID), 
+ CONSTRAINT contract_text_FK       FOREIGN KEY (tplan_ID)    REFERENCES text  (tplan_ID), 
+ CONSTRAINT contract_data_FK       FOREIGN KEY (dplan_ID)    REFERENCES data  (dplan_ID)  ); 
+
+CREATE TABLE MANUFACTURER 
+(manuf_ID       NUMBER(6), 
+ manuf_name     VARCHAR2(30), 
+ contact_lname  VARCHAR2(30), 
+ contact_fname  VARCHAR2(30), 
+ contact_phone  NUMBER(15), 
+ contact_email  VARCHAR2(50), 
+ CONSTRAINT manufacturer_manufID_PK PRIMARY KEY (manuf_ID), 
+ CONSTRAINT manufacturer_contactemail_CK CHECK (contact_email LIKE '%@%.%') ); 
+  
+CREATE TABLE PRODUCT 
+(product_ID NUMBER(5), 
+ name       VARCHAR2(30), 
+ manuf_ID   NUMBER(6), 
+ costpaid   NUMBER(6,2) NOT NULL, 
+ baseprice  NUMBER(6,2) NOT NULL, 
+ Type       VARCHAR2(9), 
+ CONSTRAINT product_ID_PK PRIMARY KEY (product_ID), 
+ CONSTRAINT product_manufID_FK FOREIGN KEY (manuf_ID) REFERENCES manufacturer (manuf_ID), 
+ CONSTRAINT product_type_CK    CHECK (Type IN ('CellPhone', 'Accessory') AND Type IS NOT NULL) ); 
+ 
+CREATE TABLE ACCESSORY 
+(access_ID  NUMBER(5), 
+ category   VARCHAR2(30), 
+ CONSTRAINT accessory_accessID_PK PRIMARY KEY (access_ID), 
+ CONSTRAINT accessory_accessID_FK FOREIGN KEY (access_ID) REFERENCES product (product_ID)   ); 
+  
+CREATE TABLE CELLPHONE 
+(phone_ID           NUMBER(5), 
+ Model              VARCHAR2(30), 
+ NetworkTechnology  VARCHAR2(4), 
+ OS                 VARCHAR2(20),
+ CONSTRAINT cellphone_phoneID_PK PRIMARY KEY (phone_ID), 
+ CONSTRAINT cellphone_phoneID_FK FOREIGN KEY (phone_ID) REFERENCES product (product_ID)  ); 
+  
+CREATE TABLE PHONE_ACCESS 
+(phone_ID   NUMBER(5), 
+ access_ID  NUMBER(5), 
+ CONSTRAINT phone_access_PK PRIMARY KEY (phone_ID, access_ID), 
+ CONSTRAINT phone_access_phoneID_FK  FOREIGN KEY (phone_ID)  REFERENCES cellphone (phone_ID), 
+ CONSTRAINT phone_access_accessID_FK FOREIGN KEY (access_ID) REFERENCES accessory (access_ID) ); 
+  
+CREATE TABLE CONTRACT_CELLPHONE 
+(contract_ID NUMBER(5), 
+ phone_ID    NUMBER(5), 
+ seq#        NUMBER(1), 
+ paidprice   NUMBER(6,2) NOT NULL, 
+ ESN         NUMBER(10)  NOT NULL, 
+ CONSTRAINT contract_cellphone_PK PRIMARY KEY (contract_ID, phone_ID, seq#), 
+ CONSTRAINT contract_cellphone_phoneID_FK FOREIGN KEY (phone_ID)    REFERENCES cellphone (phone_ID), 
+ CONSTRAINT contract_cellphone_contrID_FK FOREIGN KEY (contract_ID) REFERENCES contract (contract_ID) ); 
+
+-- CUSTOMER
+INSERT INTO customer VALUES (1001, 'Smith', 'Peter', '2201 Baker St', 'Pittsburgh', 15212, 'PA', '303-539-5395', 797, 'Equifax', '03-NOV-2014');
+INSERT INTO customer VALUES (1002, 'Jones', 'Cynthia', '4431 Main Street', 'Los Angeles', 90210, 'CA', '415-334-5566', 530, 'Experian', '24-JAN-2015');
+INSERT INTO customer VALUES (1003, 'Archer', 'Simons', '15 North Oakland Drive', 'San Francisco', 92814, 'CA', '812-986-7089', 546, 'Equifax', '12-FEB-2015');
+INSERT INTO customer VALUES (1004, 'Lee', 'Mimi', '23 Murray Ave', 'Pittsburgh', 15222, 'PA', '412-345-8978', 800, 'TransUnion', '13-SEP-2014');
+INSERT INTO customer VALUES (1005, 'Drake', 'Lu', '1667 Bleeker Street', 'New York City', 10020, 'NY', '216-675-3453', 789, 'Experian', '02-SEP-2014');
+INSERT INTO customer VALUES (1006, 'Simons', 'Thomas', '123 Hershey Way', 'Erie', 16501, 'PA', '813-786-4003', 550, 'TransUnion', '05-MAY-2014');
+INSERT INTO customer VALUES (1007, 'Jacob', 'Charlie', '1202 Federal Street', 'Baltimore', 20104, 'MD', '406-324-5377', 777, 'Equifax', '29-NOV-2014');
+INSERT INTO customer VALUES (1008, 'Blayney', 'Alessandro', '12 Liberty Way', 'Philadelphia', 19118, 'PA', '512-009-8798', 660, 'Experian', '24-FEB-2015');
+INSERT INTO customer VALUES (1009, 'Lopez', 'Sasha', '547 Palo Alto Drive', 'San Jose', 91745, 'CA', '949-098-3453', 540, 'TransUnion', '12-FEB-2015');
+INSERT INTO customer VALUES (1010, 'Mohammed', 'Sharif', '34 Center Blvd', 'Erie', 16506, 'PA', '435-567-9800', 698, 'Experian', '14-JAN-2015');
+INSERT INTO customer VALUES (1011, 'Dutton', 'Lettie', '101 Howard Street', 'Erie', 16509, 'PA', '435-889-0123', 790, 'Experian', '19-JAN-2015');
+INSERT INTO customer VALUES (1012, 'Long', 'David', '101 Broadway', 'New York City', 10010, 'NY', '212-434-7898', 520, 'Equifax', '02-MAR-2015');
+INSERT INTO customer VALUES (1013, 'Banerjee', 'Arun', '45 Grant Street', 'Pittsburgh', 15219, 'PA', '412-343-9909', 776, 'Equifax', '05-FEB-2015');
+INSERT INTO customer VALUES (1014, 'Whittaker', 'John', '123 Federal Circle', 'Erie', 16510, 'PA', '813-723-9893', 540, 'TransUnion', '05-JUL-2014');
+INSERT INTO customer VALUES (1015, 'Wolfe', 'Emily', '1402 Federal Street', 'Baltimore', 20104, 'MD', '406-312-5989', 657, 'Equifax', '29-DEC-2014');
+INSERT INTO customer VALUES (1016, 'Jones', 'Zach', '102 Main Street', 'Philadelphia', 19118, 'PA', '512-349-1238', 660, 'Experian', '24-JAN-2015');
+INSERT INTO customer VALUES (1017, 'Jefferson', 'Alvin', '787 Airport Blvd', 'San Jose', 95115, 'CA', '908-168-3429', 585, 'TransUnion', '06-DEC-2014');
+INSERT INTO customer VALUES (1018, 'Garcia', 'Juan', '43 W. 4th Street', 'New York City', 10039, 'NY', '201-456-3211', 650, 'Experian', '23-AUG-2014');
+INSERT INTO customer VALUES (1019, 'Diego', 'Sandy', '23 Sunset Blvd', 'Los Angeles', 90211, 'CA', '415-003-0090', 785, 'Equifax', '30-AUG-2014');
+INSERT INTO customer VALUES (1020, 'Freeman', 'Mary', '201 Centre Av', 'Pittsburgh', 15221, 'PA', '412-030-2002', 540, 'Equifax', '12-JAN-2015');
+
+-- PLAN
+INSERT INTO plan VALUES ('109801','02-DEC-2013','01-DEC-2014','10','text');
+INSERT INTO plan VALUES ('109802','12-FEB-2014','11-AUG-2014','24.9','voice');
+INSERT INTO plan VALUES ('109803','13-FEB-2014',null,'11.99','data');
+INSERT INTO plan VALUES ('109804','01-MAR-2014','30-APR-2014','15','text');
+INSERT INTO plan VALUES ('109805','03-MAR-2014',null,'19.9','voice');
+INSERT INTO plan VALUES ('109806','05-MAR-2014','01-JUN-2014','5','text');
+INSERT INTO plan VALUES ('109807','23-MAR-2014',null,'15','text');
+INSERT INTO plan VALUES ('109808','25-MAY-2014','04-DEC-2014','29.9','data');
+INSERT INTO plan VALUES ('109809','25-MAY-2014','01-FEB-2015','9.99','voice');
+INSERT INTO plan VALUES ('109810','11-AUG-2014',null,'40','voice');
+INSERT INTO plan VALUES ('109811','11-AUG-2014',null,'29.9','data');
+INSERT INTO plan VALUES ('109812','19-SEP-2014',null,'39.9','data');
+INSERT INTO plan VALUES ('109813','20-NOV-2014','01-JAN-2015','60','voice');
+INSERT INTO plan VALUES ('109814','20-DEC-2014',null,'25','text');
+INSERT INTO plan VALUES ('109815','01-JAN-2015','02-JAN-2015','35','data');
+INSERT INTO plan VALUES ('109816','05-JAN-2015',null,'20','text');
+INSERT INTO plan VALUES ('109817','06-FEB-2015','13-MAR-2016','35','voice');
+INSERT INTO plan VALUES ('109818','17-FEB-2015',null,'49.9','data');
+INSERT INTO plan VALUES ('109819','20-FEB-2015',null,'44.5','voice');
+INSERT INTO plan VALUES ('109820','20-FEB-2015',null,'12','text');
+
+-- VOICE
+INSERT INTO voice VALUES ('109802','1000','Yes','No','0.01');
+INSERT INTO voice VALUES ('109805', '600','Yes','No','0.05');
+INSERT INTO voice VALUES ('109809','1200', 'No','No','0.1');
+INSERT INTO voice VALUES ('109810','1000','Yes','Yes','0.01');
+INSERT INTO voice VALUES ('109813', '900', 'No','Yes','0.05');
+INSERT INTO voice VALUES ('109817','1500', 'No','No','0.1');
+INSERT INTO voice VALUES ('109819', '500', 'No','No','0.02');
+
+-- TEXT
+INSERT INTO text VALUES ('109801','1000','Yes','0.1','0.01');
+INSERT INTO text VALUES ('109804','2000','Yes','0.05','0.02');
+INSERT INTO text VALUES ('109806','1500', 'No','0','0.01');
+INSERT INTO text VALUES ('109807','1000', 'No','0','0.03');
+INSERT INTO text VALUES ('109814','2500','Yes','0.06','0.02');
+INSERT INTO text VALUES ('109816', '600', 'No','0','0.05');
+INSERT INTO text VALUES ('109820','1200', 'No','0','0.01');
+
+-- DATA
+INSERT INTO data VALUES ('109803','1000','3G','0.1');
+INSERT INTO data VALUES ('109808','2500','4G','0.05');
+INSERT INTO data VALUES ('109811','3000','4G','0.2');
+INSERT INTO data VALUES ('109812', '500','3G','0.15');
+INSERT INTO data VALUES ('109815','1500','3G','0.1');
+INSERT INTO data VALUES ('109818','2000','4G','0.2');
+
+-- CONTRACT
+INSERT INTO Contract VALUES ('10010', '1001', '109802', '109801', null, '04-Mar-2014', null, '0');
+INSERT INTO Contract VALUES ('10011', '1003', '109802', '109804', '109803', '06-Aug-2014', null, '10');
+INSERT INTO Contract VALUES ('10012', '1002', '109809', '109816', null, '06-Jan-2015', null, '0');
+INSERT INTO Contract VALUES ('10013', '1005', '109817', null, null, '02-Feb-2015', '25-Feb-2015', '0');
+INSERT INTO Contract VALUES ('10014', '1001', '109810', '109814', '109812', '02-Dec-2013', '15-Dec-2014', '15');
+INSERT INTO Contract VALUES ('10016', '1007', '109817', '109820', '109812', '05-Mar-2015', null, '8');
+INSERT INTO Contract VALUES ('10017', '1005', '109809', '109816', '109808', '01-Dec-2014', null, '30');
+INSERT INTO Contract VALUES ('10018', '1008', '109817', '109814', null, '03-Mar-2015', null, '0');
+INSERT INTO Contract VALUES ('10019', '1004', '109805', '109801', '109812', '04-Nov-2014', '03-Jan-2016', '0');
+INSERT INTO Contract VALUES ('10020', '1009', '109805', null, null, '03-Feb-2015', null, '0');
+INSERT INTO Contract VALUES ('10021', '1011', '109809', '109816', '109808', '09-Jun-2014', null, '10');
+INSERT INTO Contract VALUES ('10022', '1010', '109813', '109801', '109808', '05-Dec-2014', null, '0');
+INSERT INTO Contract VALUES ('10023', '1014', '109809', '109814', '109815', '24-Dec-2014', null, '0');
+INSERT INTO Contract VALUES ('10024', '1012', '109805', null, null, '10-Sep-2014', null, '0');
+INSERT INTO Contract VALUES ('10025', '1013', '109813', '109814', '109808', '01-Dec-2014', '04-Feb-2016', '0');
+INSERT INTO Contract VALUES ('10026', '1016', '109805', null, '109815', '01-Jan-2015', null, '0');
+INSERT INTO Contract VALUES ('10027', '1017', '109810', '109816', '109815', '01-Jan-2015', null, '0');
+INSERT INTO Contract VALUES ('10028', '1018', '109813', '109801', null, '08-Nov-2014', null, '0');
+INSERT INTO Contract VALUES ('10029', '1015', '109810', '109801', '109808', '15-Aug-2014', '02-Feb-2015', '0');
+INSERT INTO Contract VALUES ('10030', '1015', '109813', '109814', '109808', '15-Aug-2014', null, '0');
+INSERT INTO Contract VALUES ('10031', '1019', '109809', '109816', '109812', '20-Sep-2014', null, '0');
+INSERT INTO Contract VALUES ('10032', '1020', '109810', '109814', '109811', '25-Dec-2015', null, '0');
+INSERT INTO Contract VALUES ('10033', '1006', '109813', '109801', null, '03-Oct-2014', null, '0');
+INSERT INTO Contract VALUES ('10034', '1013', '109819', '109814', '109811', '04-Feb-2016', null, '3');
+INSERT INTO Contract VALUES ('10035', '1015', '109817', '109814', '109812', '02-Feb-2015', null, '0');
+INSERT INTO Contract VALUES ('10036', '1001', '109813', '109816', '109815', '15-Dec-2014', null, '3');
+
+-- MANUFACTURER
+INSERT INTO Manufacturer VALUES ('567000', 'Apple', 'Dudheria', 'Rahul', '19899401231', 'dudh_rv@gmail.com');
+INSERT INTO Manufacturer VALUES ('567001', 'Motorola', 'Nair', 'Abhijit', '19899401232', 'ab_nair@hotmail.com');
+INSERT INTO Manufacturer VALUES ('567002', 'HTC', 'Patel', 'Manan', '19899401233', 'patel_bhai@gmail.com');
+INSERT INTO Manufacturer VALUES ('567003', 'Samsung', 'Kumar', 'Shivani', '19899401234', 'shivku@gmail.com');
+INSERT INTO Manufacturer VALUES ('567004', 'LG', 'Sharma', 'Sanjana', '19899401235', 'sanju_love@gmail.com');
+INSERT INTO Manufacturer VALUES ('567005', 'Nokia', 'Kodali', 'Bhargav', '19899401236', 'bhargav_k@gmail.com');
+INSERT INTO Manufacturer VALUES ('567006', 'Blackberry', 'Sanghvi', 'Paarth', '19899401237', 'paarth_s@ymail.com');
+INSERT INTO Manufacturer VALUES ('567007', 'OtterBox', 'Shah', 'Bhavik', '19899401238', 'bhavik_bhai@gmail.com');
+INSERT INTO Manufacturer VALUES ('567008', 'Piel Frama', 'Juan', 'Gonzalez', '34956461255', 'jgonzalez@pielframa.com');
+INSERT INTO Manufacturer VALUES ('567009', 'Microsoft', 'Singh', 'Rohit', '34967361672', 'rohits@microsoft.com');
+
+
+-- PRODUCT
+INSERT INTO Product VALUES ('11256', 'iPhone Headset', '567000', '45', '60', 'Accessory');
+INSERT INTO Product VALUES ('56439', 'LG HBS-730', '567004', '62', '75', 'Accessory');
+INSERT INTO Product VALUES ('66387', 'S4 2100 mAH Battery', '567003', '8', '12', 'Accessory');
+INSERT INTO Product VALUES ('82320', 'S5 Extended Life Battery', '567003', '75', '80', 'Accessory');
+INSERT INTO Product VALUES ('87459', 'Bluetooth Generic Headset', '567007', '62', '75', 'Accessory');
+INSERT INTO Product VALUES ('87546', 'Generic non-iPhone Charger', '567007', '23', '15', 'Accessory');
+INSERT INTO Product VALUES ('87547', 'S4 2600mAH Battery', '567003', '10', '30', 'Accessory');
+INSERT INTO Product VALUES ('87548', 'iPhone Charger', '567000', '50', '35', 'Accessory');
+INSERT INTO Product VALUES ('87630', 'S4 Case', '567003', '22', '28', 'Accessory');
+INSERT INTO Product VALUES ('87647', 'S6 Defender Case', '567007', '76', '84', 'Accessory');
+INSERT INTO Product VALUES ('87648', 'S6 Commuter Case', '567007', '55', '48', 'Accessory');
+INSERT INTO Product VALUES ('99000', 'Car Holder', '567002', '45', '65', 'Accessory');
+INSERT INTO Product VALUES ('99001', 'Screen Guard', '567003', '20', '30', 'Accessory');
+INSERT INTO Product VALUES ('87556', 'Swarovski iPhone 6 Case', '567008', '150', '169', 'Accessory');
+INSERT INTO Product VALUES ('87557', 'S6 Carryall Bag', '567008', '140', '160', 'Accessory');
+INSERT INTO Product VALUES ('11243', 'Galaxy', '567003', '276', '345', 'CellPhone');
+INSERT INTO Product VALUES ('43342', 'Droid', '567001', '150', '250', 'CellPhone');
+INSERT INTO Product VALUES ('46627', 'HTC One', '567002', '200', '250', 'CellPhone');
+INSERT INTO Product VALUES ('58667', 'Droid', '567001', '275', '320', 'CellPhone');
+INSERT INTO Product VALUES ('65267', 'Bold', '567006', '63.75', '75', 'CellPhone');
+INSERT INTO Product VALUES ('86865', 'Lumia', '567005', '70', '100', 'CellPhone');
+INSERT INTO Product VALUES ('87549', 'Galaxy', '567003', '280', '350', 'CellPhone');
+INSERT INTO Product VALUES ('87555', 'iPhone', '567000', '260', '350', 'CellPhone');
+INSERT INTO Product VALUES ('87559', 'iPhone', '567000', '550', '650', 'CellPhone');
+INSERT INTO Product VALUES ('87580', 'Galaxy', '567003', '450', '580', 'CellPhone');
+INSERT INTO Product VALUES ('87880', 'iPhone', '567000', '650', '749', 'CellPhone');
+INSERT INTO Product VALUES ('88001', 'Nokia 100', '567005', '20', '25', 'CellPhone');
+INSERT INTO Product VALUES ('89789', 'iPhone', '567000', '450', '500', 'CellPhone');
+INSERT INTO Product VALUES ('89800', 'HTC Desire', '567002', '440', '550', 'CellPhone');
+INSERT INTO Product VALUES ('89900', 'Galaxy', '567003', '400', '500', 'CellPhone');
+
+-- Accessory
+INSERT INTO Accessory VALUES ('11256', 'Headset');
+INSERT INTO Accessory VALUES ('56439', 'Headset');
+INSERT INTO Accessory VALUES ('66387', 'Battery');
+INSERT INTO Accessory VALUES ('82320', 'Battery');
+INSERT INTO Accessory VALUES ('87459', 'Headset');
+INSERT INTO Accessory VALUES ('87546', 'Charger');
+INSERT INTO Accessory VALUES ('87547', 'Battery');
+INSERT INTO Accessory VALUES ('87548', 'Charger');
+INSERT INTO Accessory VALUES ('87630', 'Case');
+INSERT INTO Accessory VALUES ('87647', 'Case');
+INSERT INTO Accessory VALUES ('87648', 'Case');
+INSERT INTO Accessory VALUES ('99000', 'Car Holder');
+INSERT INTO Accessory VALUES ('99001', 'Screen Guard');
+INSERT INTO Accessory VALUES ('87556', 'Case');
+INSERT INTO Accessory VALUES ('87557', 'Carryall Bag');
+
+-- CELLPHONE
+INSERT INTO CellPhone VALUES ('11243', 'Galaxy S II Plus', '3G', 'Android');
+INSERT INTO CellPhone VALUES ('43342', 'Droid Maxx', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('46627', 'HTC One S', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('58667', 'Droid 2', '3G', 'Android');
+INSERT INTO CellPhone VALUES ('65267', 'Bold 9780', '3G', 'Blackberry');
+INSERT INTO CellPhone VALUES ('86865', 'Lumia 900', '4G', 'Windows Phone');
+INSERT INTO CellPhone VALUES ('87549', 'Galaxy S4 GT-i9500', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('87555', 'iPhone 5c', '4G', 'iOS 8.0');
+INSERT INTO CellPhone VALUES ('88001', 'Nokia 100', 'No', 'Series 30');
+INSERT INTO CellPhone VALUES ('89789', 'iPhone 6', '4G', 'iOS 8.0');
+INSERT INTO CellPhone VALUES ('89800', 'HTC Desire Eye', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('89900', 'Galaxy S5', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('87580', 'Galaxy S6', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('87559', 'iPhone 6S', '4G', 'iOS 9.2');
+INSERT INTO CellPhone VALUES ('87880', 'iPhone 6S Plus', '4G', 'iOS 9.2');
+
+-- PHONE_ACCESS
+INSERT INTO Phone_Access VALUES ('65267', '87546');
+INSERT INTO Phone_Access VALUES ('11243', '87546');
+INSERT INTO Phone_Access VALUES ('11243', '87459');
+INSERT INTO Phone_Access VALUES ('87549', '66387');
+INSERT INTO Phone_Access VALUES ('87549', '87547');
+INSERT INTO Phone_Access VALUES ('87549', '87630');
+INSERT INTO Phone_Access VALUES ('87549', '87546');
+INSERT INTO Phone_Access VALUES ('87549', '87459');
+INSERT INTO Phone_Access VALUES ('89900', '99001');
+INSERT INTO Phone_Access VALUES ('89900', '82320');
+INSERT INTO Phone_Access VALUES ('89900', '87546');
+INSERT INTO Phone_Access VALUES ('89900', '87459');
+INSERT INTO Phone_Access VALUES ('87580', '87647');
+INSERT INTO Phone_Access VALUES ('87580', '87648');
+INSERT INTO Phone_Access VALUES ('87580', '87546');
+INSERT INTO Phone_Access VALUES ('87580', '87459');
+INSERT INTO Phone_Access VALUES ('89800', '99000');
+INSERT INTO Phone_Access VALUES ('89789', '11256');
+INSERT INTO Phone_Access VALUES ('89789', '87459');
+INSERT INTO Phone_Access VALUES ('87880', '87548');
+INSERT INTO Phone_Access VALUES ('87880', '11256');
+
+-- CONTRACT_CELLPHONE
+INSERT INTO Contract_CellPhone VALUES ('10011', '11243', '1', '345', '1232145654');
+INSERT INTO Contract_CellPhone VALUES ('10011', '87549', '2', '350', '2323565678');
+INSERT INTO Contract_CellPhone VALUES ('10025', '58667', '1', '300', '5438767651');
+INSERT INTO Contract_CellPhone VALUES ('10018', '87555', '1', '350', '3454334532');
+INSERT INTO Contract_CellPhone VALUES ('10031', '46627', '1', '250', '2938465831');
+INSERT INTO Contract_CellPhone VALUES ('10017', '46627', '1', '250', '8766543289');
+INSERT INTO Contract_CellPhone VALUES ('10013', '87555', '1', '425', '3445421789');
+INSERT INTO Contract_CellPhone VALUES ('10021', '87555', '1', '350', '3456129642');
+INSERT INTO Contract_CellPhone VALUES ('10021', '87555', '2', '350', '8732786480');
+INSERT INTO Contract_CellPhone VALUES ('10032', '87555', '1', '360', '2319347891');
+INSERT INTO Contract_CellPhone VALUES ('10028', '86865', '1', '100', '3218759604');
+INSERT INTO Contract_CellPhone VALUES ('10016', '46627', '1', '250', '9876554321');
+INSERT INTO Contract_CellPhone VALUES ('10016', '65267', '2', '85', '1002938475');
+INSERT INTO Contract_CellPhone VALUES ('10027', '86865', '1', '100', '9826485932');
+INSERT INTO Contract_CellPhone VALUES ('10012', '58667', '1', '320', '3452123533');
+INSERT INTO Contract_CellPhone VALUES ('10026', '87555', '1', '350', '6541835680');
+INSERT INTO Contract_CellPhone VALUES ('10019', '43342', '1', '250', '2334567654');
+INSERT INTO Contract_CellPhone VALUES ('10024', '46627', '1', '250', '3456123457');
+INSERT INTO Contract_CellPhone VALUES ('10020', '87549', '1', '320', '2345678912');
+INSERT INTO Contract_CellPhone VALUES ('10022', '46627', '1', '250', '5634512345');
+INSERT INTO Contract_CellPhone VALUES ('10033', '43342', '1', '270', '2319752032');
+INSERT INTO Contract_CellPhone VALUES ('10010', '11243', '1', '345', '1234567890');
+INSERT INTO Contract_CellPhone VALUES ('10014', '65267', '1', '85', '8752570865');
+INSERT INTO Contract_CellPhone VALUES ('10014', '65267', '2', '85', '5421785345');
+INSERT INTO Contract_CellPhone VALUES ('10014', '65267', '3', '85', '3454323457');
+INSERT INTO Contract_CellPhone VALUES ('10023', '11243', '1', '345', '1276349812');
+INSERT INTO Contract_CellPhone VALUES ('10030', '58667', '1', '320', '9742467907');
+INSERT INTO Contract_CellPhone VALUES ('10029', '87549', '1', '350', '4328753902');
+INSERT INTO Contract_CellPhone VALUES ('10034', '89900', '1', '500', '5412547852');
+INSERT INTO Contract_CellPhone VALUES ('10034', '87580', '2', '580', '5445596775');
+INSERT INTO Contract_CellPhone VALUES ('10035', '87880', '1', '749', '9954123213');
+INSERT INTO Contract_CellPhone VALUES ('10036', '87580', '1', '590', '5412332123');
+INSERT INTO Contract_CellPhone VALUES ('10036', '87880', '2', '755', '1322546899');
+
+commit;
+
+-- ------------- Additions to script #2: ----------------
+
+ALTER TABLE manufacturer ADD website VARCHAR2(30);
+
+UPDATE manufacturer SET website='www.apple.com' WHERE manuf_name='Apple';
+UPDATE manufacturer SET website='www.motorola.com' WHERE manuf_name='Motorola';
+UPDATE manufacturer SET website='www.htc.com' WHERE manuf_name='HTC';
+UPDATE manufacturer SET website='www.samsung.com' WHERE manuf_name='Samsung';
+UPDATE manufacturer SET website='www.lg.com' WHERE manuf_name='LG';
+UPDATE manufacturer SET website='www.nokia.com' WHERE manuf_name='Nokia';
+UPDATE manufacturer SET website='www.blackberry.com' WHERE manuf_name='Blackberry';
+UPDATE manufacturer SET website='www.otterbox.com' WHERE manuf_name='OtterBox';
+UPDATE manufacturer SET website='www.pielframa.com' WHERE manuf_name='Piel Frama';
+UPDATE manufacturer SET website='www.microsoft.com' WHERE manuf_name='Microsoft';
+
+INSERT INTO Product VALUES ('87990', 'iPhone', '567000', '750', '850', 'CellPhone');
+INSERT INTO Product VALUES ('87570', 'Galaxy', '567003', '550', '670', 'CellPhone');
+INSERT INTO Product VALUES ('86870', 'Lumia', '567009', '475', '525', 'CellPhone');
+
+INSERT INTO CellPhone VALUES ('87990', 'iPhone 7', '4G', 'iOS 10');
+INSERT INTO CellPhone VALUES ('87570', 'Galaxy S6 Edge', '4G', 'Android');
+INSERT INTO CellPhone VALUES ('86870', 'Lumia 950', '4G', 'Windows 10');
+
+INSERT INTO Phone_Access VALUES ('87990', '87548');
+INSERT INTO Phone_Access VALUES ('87990', '11256');
+
+INSERT INTO Phone_Access VALUES ('87570', '87546');
+INSERT INTO Phone_Access VALUES ('87570', '87459');
+
+INSERT INTO Phone_Access VALUES ('86870', '87546');
+INSERT INTO Phone_Access VALUES ('86870', '87459');
+
+commit;
+

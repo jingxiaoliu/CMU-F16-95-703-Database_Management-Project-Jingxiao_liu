@@ -1,0 +1,270 @@
+SQL> SET pagesize 50
+SQL> SET linesize 150
+SQL> --Q1
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Manuf_Name FORMAT A15
+SQL> COLUMN Name FORMAT A30
+SQL> COLUMN "Original Price" FORMAT $990.00
+SQL> COLUMN "Promotion Price" FORMAT $990.00
+SQL> SELECT Manuf_Name, Product_ID, Name, BasePrice AS "Original Price",
+  2     CASE Manuf_Name
+  3  WHEN 'Apple' THEN 0.90*BasePrice
+  4  WHEN 'Samsung' THEN 0.90*BasePrice
+  5  WHEN 'HTC' THEN 0.85*BasePrice
+  6  WHEN'LG' THEN 0.85*BasePrice
+  7  ELSE 0.80*BasePrice
+  8     END AS "Promotion Price"
+  9  FROM   Manufacturer JOIN Product ON Manufacturer.Manuf_ID = Product.Manuf_ID
+ 10  WHERE  Type = 'Accessory'
+ 11  ORDER BY Manuf_Name, "Promotion Price";
+
+MANUF_NAME      PRODUCT_ID NAME                           Original Price Promotion Price                                                              
+--------------- ---------- ------------------------------ -------------- ---------------                                                              
+Apple                87548 iPhone Charger                         $35.00          $31.50                                                              
+Apple                11256 iPhone Headset                         $60.00          $54.00                                                              
+HTC                  99000 Car Holder                             $65.00          $55.25                                                              
+LG                   56439 LG HBS-730                             $75.00          $63.75                                                              
+OtterBox             87546 Generic non-iPhone Charger             $15.00          $12.00                                                              
+OtterBox             87648 S6 Commuter Case                       $48.00          $38.40                                                              
+OtterBox             87459 Bluetooth Generic Headset              $75.00          $60.00                                                              
+OtterBox             87647 S6 Defender Case                       $84.00          $67.20                                                              
+Piel Frama           87557 S6 Carryall Bag                       $160.00         $128.00                                                              
+Piel Frama           87556 Swarovski iPhone 6 Case               $169.00         $135.20                                                              
+Samsung              66387 S4 2100 mAH Battery                    $12.00          $10.80                                                              
+Samsung              87630 S4 Case                                $28.00          $25.20                                                              
+Samsung              87547 S4 2600mAH Battery                     $30.00          $27.00                                                              
+Samsung              99001 Screen Guard                           $30.00          $27.00                                                              
+Samsung              82320 S5 Extended Life Battery               $80.00          $72.00                                                              
+
+15 rows selected.
+
+SQL> --Q2
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Phone FORMAT A25
+SQL> COLUMN "Earliest Contract" FORMAT A18
+SQL> COLUMN "Recent Contract" FORMAT A15
+SQL> SELECT Cellphone.Phone_ID || ', ' || Model AS "Phone",
+  2     COUNT(Contract.Contract_ID) AS "# of Contract",
+  3     MIN(Start_Date) AS "Earliest Contract",
+  4     MAX(Start_Date) AS "Recent Contract"
+  5  FROM   Contract JOIN Contract_Cellphone ON Contract.Contract_ID = Contract_Cellphone.Contract_ID
+  6  JOIN CellPhone ON CellPhone.Phone_ID = Contract_Cellphone.Phone_ID
+  7  GROUP BY CellPhone.Phone_ID, Model
+  8  HAVING   COUNT(Contract.Contract_ID) > 3;
+
+Phone                     # of Contract Earliest Contract  Recent Contract                                                                            
+------------------------- ------------- ------------------ ---------------                                                                            
+46627, HTC One S                      5 10-SEP-14          05-MAR-15                                                                                  
+65267, Bold 9780                      4 02-DEC-13          05-MAR-15                                                                                  
+87555, iPhone 5c                      6 09-JUN-14          25-DEC-15                                                                                  
+
+SQL> --Q3
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Network FORMAT A10
+SQL> SELECT Data.NetworkTechnology AS "Network",
+  2     SUM(DECODE(Manuf_Name,'Apple',1)) AS "Apple",
+  3     SUM(DECODE(Manuf_Name,'Samsung',1)) AS "Samsung"
+  4  FROM   Contract JOIN Data ON Data.dPlan_ID = Contract.dPlan_ID
+  5  JOIN Contract_Cellphone cc ON cc.Contract_ID = Contract.Contract_ID
+  6  JOIN CellPhone ON CellPhone.Phone_ID = cc.Phone_ID
+  7  JOIN Product ON Product.Product_ID = CellPhone.Phone_ID
+  8  JOIN Manufacturer ON Product.Manuf_ID = Manufacturer.Manuf_ID
+  9  WHERE  Contract.End_date IS NULL
+ 10  GROUP BY Data.NetworkTechnology;
+
+Network         Apple    Samsung                                                                                                                      
+---------- ---------- ----------                                                                                                                      
+3G                  3          4                                                                                                                      
+4G                  3          2                                                                                                                      
+
+SQL> --Q4
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN "CUSTOMER" FORMAT A30
+SQL> SELECT Customer_ID || '-' || Lname || ', ' || Fname AS "CUSTOMER",
+  2     COUNT(Phone_ID) AS "# of Phones",
+  3     COUNT(DISTINCT Contract.Contract_ID) AS "# of Contract"
+  4  FROM   Customer JOIN Contract ON Contract.Customer_ID = Customer.ID
+  5  JOIN Contract_Cellphone cc ON cc.Contract_ID = Contract.Contract_ID
+  6  GROUP BY Customer_ID || '-' || Lname || ', ' || Fname
+  7  ORDER BY 2 DESC, 3 DESC;
+
+CUSTOMER                       # of Phones # of Contract                                                                                              
+------------------------------ ----------- -------------                                                                                              
+1001-Smith, Peter                        6             3                                                                                              
+1015-Wolfe, Emily                        3             3                                                                                              
+1013-Banerjee, Arun                      3             2                                                                                              
+1005-Drake, Lu                           2             2                                                                                              
+1011-Dutton, Lettie                      2             1                                                                                              
+1007-Jacob, Charlie                      2             1                                                                                              
+1003-Archer, Simons                      2             1                                                                                              
+1002-Jones, Cynthia                      1             1                                                                                              
+1018-Garcia, Juan                        1             1                                                                                              
+1014-Whittaker, John                     1             1                                                                                              
+1008-Blayney, Alessandro                 1             1                                                                                              
+1020-Freeman, Mary                       1             1                                                                                              
+1012-Long, David                         1             1                                                                                              
+1009-Lopez, Sasha                        1             1                                                                                              
+1006-Simons, Thomas                      1             1                                                                                              
+1016-Jones, Zach                         1             1                                                                                              
+1010-Mohammed, Sharif                    1             1                                                                                              
+1017-Jefferson, Alvin                    1             1                                                                                              
+1004-Lee, Mimi                           1             1                                                                                              
+1019-Diego, Sandy                        1             1                                                                                              
+
+20 rows selected.
+
+SQL> --Q5
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Plan_Type FORMAT A10
+SQL> SELECT Plan.Plan_ID, Plan.Plan_Type
+  2  FROM   Plan
+  3  MINUS
+  4  SELECT DISTINCT Plan.Plan_ID, Plan.Plan_Type
+  5  FROM   Customer JOIN Contract ON Contract.Customer_ID = Customer.ID
+  6  JOIN Plan ON Plan.Plan_ID = Contract.vPlan_ID
+  7  OR Plan.Plan_ID = Contract.tPlan_ID
+  8  OR Plan.Plan_ID = Contract.dPlan_ID;
+
+   PLAN_ID PLAN_TYPE                                                                                                                                  
+---------- ----------                                                                                                                                 
+    109806 text                                                                                                                                       
+    109807 text                                                                                                                                       
+    109818 data                                                                                                                                       
+
+SQL> --Q6
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Manuf_Name FORMAT A15
+SQL> COLUMN Model FORMAT A25
+SQL> SELECT Manuf_Name, Model,
+  2     COUNT(DISTINCT Contract.Contract_ID) AS "# of Contracts",
+  3     COUNT(DISTINCT Customer_ID) AS "# of Customers",
+  4     COUNT(DISTINCT CASE
+  5   WHEN end_date IS NULL
+  6   THEN Customer_ID
+  7   ELSE NULL END) AS "Current Customer"
+  8  FROM   Contract JOIN Contract_Cellphone cc ON cc.Contract_ID = Contract.Contract_ID
+  9  JOIN CellPhone ON CellPhone.Phone_ID = cc.Phone_ID
+ 10  JOIN Product ON Product.Product_ID = CellPhone.Phone_ID
+ 11  JOIN Manufacturer ON Manufacturer.Manuf_ID = Product.Manuf_ID
+ 12  GROUP BY Manuf_Name, Model
+ 13  ORDER BY "# of Contracts" DESC;
+
+MANUF_NAME      MODEL                     # of Contracts # of Customers Current Customer                                                              
+--------------- ------------------------- -------------- -------------- ----------------                                                              
+HTC             HTC One S                              5              5                5                                                              
+Apple           iPhone 5c                              5              5                4                                                              
+Samsung         Galaxy S4 GT-i9500                     3              3                2                                                              
+Samsung         Galaxy S II Plus                       3              3                3                                                              
+Motorola        Droid 2                                3              3                2                                                              
+Blackberry      Bold 9780                              2              2                1                                                              
+Nokia           Lumia 900                              2              2                2                                                              
+Apple           iPhone 6S Plus                         2              2                2                                                              
+Samsung         Galaxy S6                              2              2                2                                                              
+Motorola        Droid Maxx                             2              2                1                                                              
+Samsung         Galaxy S5                              1              1                1                                                              
+
+11 rows selected.
+
+SQL> --Q7
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Model FORMAT A20
+SQL> SELECT Model, COUNT(CASE
+  2  WHEN Contract.Start_Date >= ADD_MONTHS(SYSDATE,-15)
+  3  THEN CellPhone.Phone_ID
+  4  ELSE NULL
+  5  END) AS "# of Units"
+  6  FROM   Contract JOIN Contract_Cellphone cc ON cc.Contract_ID = Contract.Contract_ID
+  7  JOIN CellPhone ON cc.Phone_ID = CellPhone.Phone_ID
+  8  GROUP BY Model
+  9  ORDER BY 2 DESC;
+
+MODEL                # of Units                                                                                                                       
+-------------------- ----------                                                                                                                       
+iPhone 5c                     1                                                                                                                       
+Galaxy S5                     1                                                                                                                       
+Galaxy S6                     1                                                                                                                       
+Galaxy S4 GT-i9500            0                                                                                                                       
+iPhone 6S Plus                0                                                                                                                       
+HTC One S                     0                                                                                                                       
+Lumia 900                     0                                                                                                                       
+Droid Maxx                    0                                                                                                                       
+Droid 2                       0                                                                                                                       
+Galaxy S II Plus              0                                                                                                                       
+Bold 9780                     0                                                                                                                       
+
+11 rows selected.
+
+SQL> --Q8
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Name FORMAT A20
+SQL> COLUMN Address FORMAT A50
+SQL> SELECT Lname || ', ' ||Fname AS "Name",
+  2     Street || ', ' || CITY || ', ' || State || ', ' || ZipCode AS "Address",
+  3     NumMin AS VoiceLimit, TextLimit, DataLimit
+  4  FROM   Customer JOIN Contract ON Contract.Customer_ID = Customer.ID
+  5  JOIN Voice ON Voice.vPlan_ID = Contract.vPlan_ID
+  6  JOIN Text ON Text.tPlan_ID = Contract.tPlan_ID
+  7  JOIN Data ON Data.dPlan_ID = Contract.dPlan_ID
+  8  WHERE  Contract.End_Date IS NULL
+  9    AND  (NumMin > (SELECT AVG(NumMin) FROM Voice)
+ 10  OR TextLimit > (SELECT AVG(TextLimit) FROM Text)
+ 11  OR DataLimit > (SELECT AVG(DataLimit) FROM Data));
+
+Name                 Address                                            VOICELIMIT  TEXTLIMIT  DATALIMIT                                              
+-------------------- -------------------------------------------------- ---------- ---------- ----------                                              
+Archer, Simons       15 North Oakland Drive, San Francisco, CA, 92814         1000       2000       1000                                              
+Drake, Lu            1667 Bleeker Street, New York City, NY, 10020            1200        600       2500                                              
+Dutton, Lettie       101 Howard Street, Erie, PA, 16509                       1200        600       2500                                              
+Diego, Sandy         23 Sunset Blvd, Los Angeles, CA, 90211                   1200        600        500                                              
+Whittaker, John      123 Federal Circle, Erie, PA, 16510                      1200       2500       1500                                              
+Jefferson, Alvin     787 Airport Blvd, San Jose, CA, 95115                    1000        600       1500                                              
+Freeman, Mary        201 Centre Av, Pittsburgh, PA, 15221                     1000       2500       3000                                              
+Wolfe, Emily         1402 Federal Street, Baltimore, MD, 20104                 900       2500       2500                                              
+Mohammed, Sharif     34 Center Blvd, Erie, PA, 16506                           900       1000       2500                                              
+Jacob, Charlie       1202 Federal Street, Baltimore, MD, 20104                1500       1200        500                                              
+Wolfe, Emily         1402 Federal Street, Baltimore, MD, 20104                1500       2500        500                                              
+Banerjee, Arun       45 Grant Street, Pittsburgh, PA, 15219                    500       2500       3000                                              
+
+12 rows selected.
+
+SQL> --Q9
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN "CUSTOMER" FORMAT A30
+SQL> COLUMN City FORMAT A15
+SQL> COLUMN state FORMAT A5
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer",
+  2     City, state,Contract.Contract_ID
+  3  FROM   Customer JOIN Contract ON Contract.Customer_ID = Customer.ID
+  4  JOIN Voice ON Voice.vPlan_ID = Contract.vPlan_ID
+  5  JOIN Plan ON Plan.Plan_ID = Voice.vPlan_ID
+  6  WHERE  Contract.End_Date IS NULL
+  7    AND  BasePrice*(1-DiscountPerc/100) > (SELECT AVG(BasePrice*(1-DiscountPerc/100))
+  8    FROM Customer JOIN Contract ON Contract.Customer_ID = Customer.ID
+  9  JOIN Voice ON Voice.vPlan_ID = Contract.vPlan_ID
+ 10  JOIN Plan ON Plan.Plan_ID = Voice.vPlan_ID);
+
+Customer                       CITY            STATE CONTRACT_ID                                                                                      
+------------------------------ --------------- ----- -----------                                                                                      
+1008 - Blayney, Alessandro     Philadelphia    PA          10018                                                                                      
+1010 - Mohammed, Sharif        Erie            PA          10022                                                                                      
+1017 - Jefferson, Alvin        San Jose        CA          10027                                                                                      
+1018 - Garcia, Juan            New York City   NY          10028                                                                                      
+1015 - Wolfe, Emily            Baltimore       MD          10030                                                                                      
+1020 - Freeman, Mary           Pittsburgh      PA          10032                                                                                      
+1006 - Simons, Thomas          Erie            PA          10033                                                                                      
+1013 - Banerjee, Arun          Pittsburgh      PA          10034                                                                                      
+1015 - Wolfe, Emily            Baltimore       MD          10035                                                                                      
+1001 - Smith, Peter            Pittsburgh      PA          10036                                                                                      
+
+10 rows selected.
+
+SQL> SPOOL OUT

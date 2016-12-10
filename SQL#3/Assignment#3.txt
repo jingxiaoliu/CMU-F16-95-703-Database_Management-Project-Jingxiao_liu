@@ -1,0 +1,307 @@
+SQL> SET pagesize 50
+SQL> SET linesize 150
+SQL> --Q1.a
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Manuf_Name FORMAT A10
+SQL> SELECT *
+  2  FROM (SELECT Manuf_Name, COUNT(DISTINCT Contract.Contract_ID) AS ContractNum,
+  3   Rank() OVER (ORDER BY COUNT(DISTINCT Contract.Contract_ID) DESC) AS Rank
+  4    FROM   Manufacturer JOIN Product ON Manufacturer.Manuf_ID = Product.Manuf_ID
+  5  JOIN CellPhone ON CellPhone.Phone_ID = Product.Product_ID
+  6  JOIN Contract_CellPhone cc ON cc.Phone_ID = CellPhone.Phone_ID
+  7  JOIN Contract ON Contract.Contract_ID = cc.Contract_ID
+  8    WHERE  Contract.End_Date IS NULL
+  9    GROUP BY Manufacturer.Manuf_ID, Manuf_Name)
+ 10  WHERE rank <= 5;
+
+MANUF_NAME CONTRACTNUM       RANK                                                                                                                     
+---------- ----------- ----------                                                                                                                     
+Samsung              6          1                                                                                                                     
+Apple                6          1                                                                                                                     
+HTC                  5          3                                                                                                                     
+Motorola             3          4                                                                                                                     
+Nokia                2          5                                                                                                                     
+
+SQL> --Q1.b
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN 'Manufacturers' FORMAT A20
+SQL> SELECT DECODE(Category, Null, 'Manufacturer total', Category) "Manufacturers",
+  2         SUM(DECODE(LOWER(Manuf_Name),'samsung',1,0)) "Samsung",
+  3     SUM(DECODE(LOWER(Manuf_Name),'apple',1,0)) "Apple",
+  4     SUM(DECODE(LOWER(Manuf_Name),'htc',1,0)) "HTC",
+  5     SUM(DECODE(LOWER(Manuf_Name),'motorola',1,0)) "Motorola",
+  6     SUM(DECODE(LOWER(Manuf_Name),'nokia',1,0)) "Nokia",
+  7     COUNT(Access_ID) AS "Category total"
+  8  FROM   Accessory JOIN Product ON Access_ID = Product_ID
+  9                   JOIN Manufacturer ON Product.Manuf_ID = Manufacturer.Manuf_ID
+ 10  GROUP BY GROUPING SETS (category, ())
+ 11  ORDER BY category;
+
+Manufacturers           Samsung      Apple        HTC   Motorola      Nokia Category total                                                            
+-------------------- ---------- ---------- ---------- ---------- ---------- --------------                                                            
+Battery                       3          0          0          0          0              3                                                            
+Car Holder                    0          0          1          0          0              1                                                            
+Carryall Bag                  0          0          0          0          0              1                                                            
+Case                          1          0          0          0          0              4                                                            
+Charger                       0          1          0          0          0              2                                                            
+Headset                       0          1          0          0          0              3                                                            
+Screen Guard                  1          0          0          0          0              1                                                            
+Manufacturer total            5          2          1          0          0             15                                                            
+
+8 rows selected.
+
+SQL> --Q2
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Phone FORMAT A30
+SQL> SELECT Phone, Num_of_Phone, Num_of_Contract, Average_Price
+  2  FROM   (SELECT Manuf_Name || ' - ' || Model AS Phone, Num_of_Phone, Num_of_Contract,
+  3                 RANK() OVER (PARTITION BY Manuf_Name ORDER BY (Num_of_Contract) DESC) AS RANK, Average_Price
+  4  FROM   (SELECT Manuf_Name, Model, COUNT(CellPhone.Phone_ID) AS Num_of_Phone,
+  5                 COUNT(DISTINCT Contract_ID) AS Num_of_Contract, TO_CHAR(AVG(PaidPrice), '$999.99') AS Average_Price
+  6          FROM   Contract_CellPhone cc JOIN CellPhone ON cc.Phone_ID = CellPhone.Phone_ID
+  7                   JOIN Product ON CellPhone.Phone_ID = Product.Product_ID
+  8                   JOIN Manufacturer ON Manufacturer.Manuf_ID = Product.Manuf_ID
+  9   GROUP BY Manuf_Name, Model))
+ 10  WHERE Rank = 1
+ 11  ORDER BY 1;
+
+PHONE                          NUM_OF_PHONE NUM_OF_CONTRACT AVERAGE_                                                                                  
+------------------------------ ------------ --------------- --------                                                                                  
+Apple - iPhone 5c                         6               5  $364.17                                                                                  
+Blackberry - Bold 9780                    4               2   $85.00                                                                                  
+HTC - HTC One S                           5               5  $250.00                                                                                  
+Motorola - Droid 2                        3               3  $313.33                                                                                  
+Nokia - Lumia 900                         2               2  $100.00                                                                                  
+Samsung - Galaxy S II Plus                3               3  $345.00                                                                                  
+Samsung - Galaxy S4 GT-i9500              3               3  $340.00                                                                                  
+
+7 rows selected.
+
+SQL> --Q3
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> SELECT vPlan_ID AS Plan_ID, SelectedNum, Type
+  2  FROM   (SELECT *
+  3      FROM (SELECT vPlan_ID, COUNT(vPlan_ID) AS SelectedNum, Plan_Type AS Type, Rank() OVER (ORDER BY COUNT(vPlan_ID) DESC) AS RANK
+  4    FROM   Contract JOIN Plan ON vPlan_ID = Plan_ID
+  5    GROUP BY vPlan_ID, Plan_Type)
+  6  WHERE Rank = 1)
+  7  UNION
+  8  SELECT tPlan_ID AS Plan_ID, SelectedNum, Type
+  9  FROM   (SELECT *
+ 10      FROM (SELECT tPlan_ID, COUNT(tPlan_ID) AS SelectedNum, Plan_Type AS Type, Rank() OVER (ORDER BY COUNT(tPlan_ID) DESC) AS RANK
+ 11    FROM   Contract JOIN Plan ON tPlan_ID = Plan_ID
+ 12    GROUP BY tPlan_ID, Plan_Type)
+ 13  WHERE Rank = 1)
+ 14  UNION
+ 15  SELECT dPlan_ID AS Plan_ID, SelectedNum, Type
+ 16  FROM   (SELECT *
+ 17      FROM (SELECT dPlan_ID, COUNT(dPlan_ID) AS SelectedNum, Plan_Type AS Type, Rank() OVER (ORDER BY COUNT(dPlan_ID) DESC) AS RANK
+ 18    FROM   Contract JOIN Plan ON dPlan_ID = Plan_ID
+ 19    GROUP BY dPlan_ID, Plan_Type)
+ 20  WHERE Rank = 1);
+
+   PLAN_ID SELECTEDNUM TYPE                                                                                                                           
+---------- ----------- -----                                                                                                                          
+    109808           6 data                                                                                                                           
+    109813           6 voice                                                                                                                          
+    109814           8 text                                                                                                                           
+
+SQL> --Q4
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> SELECT Category, COUNT(ID) AS CustomerNum,
+  2     TO_CHAR(100 * COUNT(ID)/(SELECT COUNT(ID) FROM Customer), '990.99') || '%' AS "Percent"
+  3  FROM   (SELECT (CASE
+  4              WHEN CreditScore >= 300 AND CreditScore <= 499 THEN 'Poor Credit'
+  5          WHEN CreditScore >= 500 AND CreditScore <= 699 THEN 'Acceptable Credit'
+  6          WHEN CreditScore >= 700 AND CreditScore <= 850 THEN 'Good/Excellent Credit'
+  7          ELSE NULL END) AS Category, ID
+  8  FROM    Customer)
+  9          RIGHT OUTER JOIN
+ 10  (SELECT 'Poor Credit' AS Category FROM customer
+ 11           UNION
+ 12       SELECT 'Acceptable Credit' AS Category FROM customer
+ 13       UNION
+ 14       SELECT 'Good/Excellent Credit' AS Category FROM customer) USING(Category)
+ 15  GROUP BY Category;
+
+CATEGORY              CUSTOMERNUM Percent                                                                                                             
+--------------------- ----------- --------                                                                                                            
+Poor Credit                     0    0.00%                                                                                                            
+Good/Excellent Credit           7   35.00%                                                                                                            
+Acceptable Credit              13   65.00%                                                                                                            
+
+SQL> --Q5
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Customer FORMAT A30
+SQL> COLUMN Period FORMAT A25
+SQL> COLUMN Model FORMAT A15
+SQL> SELECT ID || ' - ' || Lname || ', ' || Fname AS "Customer", start_date||' - '||end_date as Period,
+  2         (CASE
+  3      WHEN End_Date IS NULL THEN 'Active'
+  4  ELSE 'Inactive' END) AS "Status", Model
+  5  FROM   Customer JOIN Contract ON ID = Customer_ID
+  6                  JOIN Contract_CellPhone cc ON cc.Contract_ID = Contract.Contract_ID
+  7  JOIN CellPhone ON CellPhone.Phone_ID = cc.Phone_ID
+  8  WHERE  REGEXP_LIKE(LOWER(Model), 'iphone')
+  9  ORDER BY 3,1;
+
+Customer                       PERIOD                    Status   MODEL                                                                               
+------------------------------ ------------------------- -------- ---------------                                                                     
+1001 - Smith, Peter            15-DEC-14 -               Active   iPhone 6S Plus                                                                      
+1008 - Blayney, Alessandro     03-MAR-15 -               Active   iPhone 5c                                                                           
+1011 - Dutton, Lettie          09-JUN-14 -               Active   iPhone 5c                                                                           
+1011 - Dutton, Lettie          09-JUN-14 -               Active   iPhone 5c                                                                           
+1015 - Wolfe, Emily            02-FEB-15 -               Active   iPhone 6S Plus                                                                      
+1016 - Jones, Zach             01-JAN-15 -               Active   iPhone 5c                                                                           
+1020 - Freeman, Mary           25-DEC-15 -               Active   iPhone 5c                                                                           
+1005 - Drake, Lu               02-FEB-15 - 25-FEB-15     Inactive iPhone 5c                                                                           
+
+8 rows selected.
+
+SQL> --Q6
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Model FORMAT A20
+SQL> COLUMN Total_Profit FORMAT A15
+SQL> COLUMN Average_Profit FORMAT A15
+SQL> SELECT Model,
+  2         TO_CHAR((CASE
+  3              WHEN COUNT(DISTINCT Contract.Contract_ID) = 0
+  4          THEN 0
+  5          ELSE SUM(PaidPrice-CostPaid) END),'$9999.99') AS Total_Profit,
+  6     TO_CHAR((CASE
+  7              WHEN COUNT(DISTINCT Contract.Contract_ID) = 0
+  8          THEN 0
+  9          ELSE AVG(PaidPrice-CostPaid) END),'$9999.99') AS Average_Profit,
+ 10     COUNT(DISTINCT Contract.Contract_ID) AS "# of Contract"
+ 11  FROM   Contract JOIN Contract_CellPhone cc ON cc.Contract_ID = Contract.Contract_ID
+ 12                  RIGHT OUTER JOIN CellPhone ON CellPhone.Phone_ID = cc.Phone_ID
+ 13  JOIN Product ON Product.Product_ID = CellPhone.Phone_ID
+ 14  GROUP BY Model
+ 15  ORDER BY Total_Profit DESC;
+
+MODEL                TOTAL_PROFIT    AVERAGE_PROFIT  # of Contract                                                                                    
+-------------------- --------------- --------------- -------------                                                                                    
+iPhone 5c              $625.00         $104.17                   5                                                                                    
+Galaxy S6              $270.00         $135.00                   2                                                                                    
+HTC One S              $250.00          $50.00                   5                                                                                    
+Droid Maxx             $220.00         $110.00                   2                                                                                    
+Galaxy S II Plus       $207.00          $69.00                   3                                                                                    
+iPhone 6S Plus         $204.00         $102.00                   2                                                                                    
+Galaxy S4 GT-i9500     $180.00          $60.00                   3                                                                                    
+Droid 2                $115.00          $38.33                   3                                                                                    
+Galaxy S5              $100.00         $100.00                   1                                                                                    
+Bold 9780               $85.00          $21.25                   2                                                                                    
+Lumia 900               $60.00          $30.00                   2                                                                                    
+Galaxy S6 Edge            $.00            $.00                   0                                                                                    
+HTC Desire Eye            $.00            $.00                   0                                                                                    
+iPhone 6S                 $.00            $.00                   0                                                                                    
+iPhone 7                  $.00            $.00                   0                                                                                    
+Nokia 100                 $.00            $.00                   0                                                                                    
+iPhone 6                  $.00            $.00                   0                                                                                    
+Lumia 950                 $.00            $.00                   0                                                                                    
+
+18 rows selected.
+
+SQL> --Q7
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN State FORMAT A5
+SQL> COLUMN Percent_Points FORMAT A15
+SQL> SELECT State AS "State",
+  2         COUNT(DISTINCT CASE
+  3           WHEN Plan.end_date IS NULL
+  4    AND Data.dPlan_ID IS NOT NULL
+  5   THEN ID
+  6   ELSE NULL END) AS "Customers with data",
+  7         COUNT(DISTINCT ID) AS "Total # of customers",
+  8     TO_CHAR(100 * COUNT(DISTINCT CASE
+  9     WHEN Plan.end_date IS NULL
+ 10                 AND Data.dPlan_ID IS NOT NULL
+ 11                 THEN ID ELSE NULL END)/COUNT(DISTINCT ID), '9990.99') || '%' AS Percent_Points
+ 12  FROM   Customer JOIN Contract ON ID = Customer_ID
+ 13                  LEFT OUTER JOIN Data ON Contract.dPlan_ID = Data.dPlan_ID
+ 14  JOIN Plan ON Plan.Plan_ID = Data.dPlan_ID
+ 15  WHERE  Contract.End_date IS NULL
+ 16  GROUP BY State
+ 17  ORDER BY 4 DESC;
+
+State Customers with data Total # of customers PERCENT_POINTS                                                                                         
+----- ------------------- -------------------- ---------------                                                                                        
+MD                      2                    2   100.00%                                                                                              
+CA                      2                    3    66.67%                                                                                              
+PA                      2                    7    28.57%                                                                                              
+NY                      0                    1     0.00%                                                                                              
+
+SQL> --Q8
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN "Manufacture" FORMAT A30
+SQL> SELECT Manuf_ID || ' - ' || Manuf_Name AS "Manufacture"
+  2  FROM   Manufacturer
+  3  WHERE  REGEXP_LIKE(LOWER(Manuf_Name),'([aeiou]{1})([a-z]{1})\1');
+
+Manufacture                                                                                                                                           
+------------------------------                                                                                                                        
+567001 - Motorola                                                                                                                                     
+567008 - Piel Frama                                                                                                                                   
+567009 - Microsoft                                                                                                                                    
+
+SQL> --Bonus
+SQL> CLEAR COLUMNS
+columns cleared
+SQL> COLUMN Plan FORMAT A35
+SQL> SELECT *
+  2  FROM(SELECT Plan_ID || ', ' || start_date || ' - ' || end_date AS Plan,
+  3              TO_CHAR(SUM(NVL((BasePrice*(1-DiscountPerc/100))*Period,0)),'$99990.99') AS "Revenue"
+  4       FROM   (SELECT Plan_ID, Plan.start_date, Plan.end_date, baseprice, discountperc,
+  5                      CEIL(MONTHS_BETWEEN(NVL(contract.end_date, SYSDATE), contract.start_date)) AS Period
+  6       FROM Contract RIGHT OUTER JOIN Plan ON Plan.Plan_ID = Contract.vPlan_ID
+  7             OR Plan.Plan_ID = Contract.tPlan_ID
+  8             OR Plan.Plan_ID = Contract.dPlan_ID)
+  9       GROUP BY Plan_ID, start_date, end_date
+ 10       ORDER BY "Revenue" DESC)
+ 11  UNION ALL
+ 12  SELECT 'Total' AS Plan, TO_CHAR(SUM(Revenue), '$99990.99') AS "Revenue"
+ 13  FROM(SELECT Plan_ID || ', ' || start_date || ' - ' || end_date AS Plan,
+ 14              SUM(NVL((BasePrice*(1-DiscountPerc/100))*Period,0)) AS Revenue
+ 15       FROM   (SELECT Plan_ID, Plan.start_date, Plan.end_date, baseprice, discountperc,
+ 16                      CEIL(MONTHS_BETWEEN(NVL(contract.end_date, SYSDATE), contract.start_date)) AS Period
+ 17       FROM Contract RIGHT OUTER JOIN Plan ON Plan.Plan_ID = Contract.vPlan_ID
+ 18             OR Plan.Plan_ID = Contract.tPlan_ID
+ 19             OR Plan.Plan_ID = Contract.dPlan_ID)
+ 20       GROUP BY Plan_ID, start_date, end_date);
+
+PLAN                                Revenue                                                                                                           
+----------------------------------- ----------                                                                                                        
+109813, 20-NOV-14 - 01-JAN-15         $8476.80                                                                                                        
+109812, 19-SEP-14 -                   $3694.80                                                                                                        
+109814, 20-DEC-14 -                   $3518.75                                                                                                        
+109808, 25-MAY-14 - 04-DEC-14         $3504.00                                                                                                        
+109815, 01-JAN-15 - 02-JAN-15         $3229.80                                                                                                        
+109816, 05-JAN-15 -                   $2781.60                                                                                                        
+109817, 06-FEB-15 - 13-MAR-16         $2216.20                                                                                                        
+109810, 11-AUG-14 -                   $2042.00                                                                                                        
+109805, 03-MAR-14 -                   $1720.00                                                                                                        
+109802, 12-FEB-14 - 11-AUG-14         $1455.00                                                                                                        
+109801, 02-DEC-13 - 01-DEC-14         $1280.00                                                                                                        
+109809, 25-MAY-14 - 01-FEB-15         $1158.00                                                                                                        
+109811, 11-AUG-14 -                    $621.00                                                                                                        
+109819, 20-FEB-15 -                    $436.50                                                                                                        
+109804, 01-MAR-14 - 30-APR-14          $378.00                                                                                                        
+109803, 13-FEB-14 -                    $302.40                                                                                                        
+109820, 20-FEB-15 -                    $231.84                                                                                                        
+109818, 17-FEB-15 -                      $0.00                                                                                                        
+109807, 23-MAR-14 -                      $0.00                                                                                                        
+109806, 05-MAR-14 - 01-JUN-14            $0.00                                                                                                        
+Total                                $37046.69                                                                                                        
+
+21 rows selected.
+
+SQL> SPOOL OUT

@@ -1,0 +1,1141 @@
+SQL> SET pagesize 50
+SQL> SET linesize 150
+SQL> --Q1
+SQL> COLUMN shipper FORMAT A35
+SQL> SELECT DISTINCT shipperid || ' - ' || companyname shipper
+  2  FROM orders JOIN shippers ON shipvia = shipperid
+  3  WHERE TO_CHAR(orderdate, 'Mon-yy') = 'Mar-11'
+  4    AND shipcity = 'London';
+
+SHIPPER                                                                                                                                               
+-----------------------------------                                                                                                                   
+1 - Speedy Express                                                                                                                                    
+3 - Federal Shipping                                                                                                                                  
+
+SQL> --
+SQL> COLUMN shipper FORMAT A35
+SQL> SELECT DISTINCT shipperid || ' - ' || companyname shipper
+  2  FROM orders JOIN shippers ON shipvia = shipperid
+  3  WHERE EXTRACT(month FROM orderdate) = 3
+  4    AND EXTRACT(year FROM orderdate) = 2011
+  5    AND shipcity = 'London';
+
+SHIPPER                                                                                                                                               
+-----------------------------------                                                                                                                   
+1 - Speedy Express                                                                                                                                    
+3 - Federal Shipping                                                                                                                                  
+
+SQL> --
+SQL> COLUMN shipper FORMAT A35
+SQL> SELECT DISTINCT shipperid || ' - ' || companyname shipper
+  2  FROM orders JOIN shippers ON shipvia = shipperid
+  3  WHERE TRUNC(orderdate, 'month') = '01-mar-11'
+  4    AND shipcity = 'London';
+
+SHIPPER                                                                                                                                               
+-----------------------------------                                                                                                                   
+1 - Speedy Express                                                                                                                                    
+3 - Federal Shipping                                                                                                                                  
+
+SQL> --Testing
+SQL> SELECT sysdate from dual;
+
+SYSDATE                                                                                                                                               
+---------                                                                                                                                             
+05-NOV-16                                                                                                                                             
+
+SQL> SELECT TO_CHAR(sysdate,'mm/dd/yyy hh:mi am') "TIME" FROM dual;
+
+TIME                                                                                                                                                  
+------------------                                                                                                                                    
+11/05/016 11:48 am                                                                                                                                    
+
+SQL> SELECT EXTRACT(month FROM sysdate) "Month" FROM dual;
+
+     Month                                                                                                                                            
+----------                                                                                                                                            
+        11                                                                                                                                            
+
+SQL> SELECT TO_CHAR(sysdate,'hh:mi am'),
+  2         TO_CHAR(TRUNC(sysdate),'hh:mi am'),
+  3     TRUNC(sysdate,'Y')
+  4  FROM   dual
+  5  WHERE  TRUNC(sysdate) = '05-nov-2016';
+
+TO_CHAR( TO_CHAR( TRUNC(SYS                                                                                                                           
+-------- -------- ---------                                                                                                                           
+11:48 am 12:00 am 01-JAN-16                                                                                                                           
+
+SQL> SELECT orderdate, TRUNC(orderdate,'Y')
+  2  FROM   orders;
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+04-JUL-10 01-JAN-10                                                                                                                                   
+05-JUL-10 01-JAN-10                                                                                                                                   
+08-JUL-10 01-JAN-10                                                                                                                                   
+08-JUL-10 01-JAN-10                                                                                                                                   
+09-JUL-10 01-JAN-10                                                                                                                                   
+10-JUL-10 01-JAN-10                                                                                                                                   
+11-JUL-10 01-JAN-10                                                                                                                                   
+12-JUL-10 01-JAN-10                                                                                                                                   
+15-JUL-10 01-JAN-10                                                                                                                                   
+16-JUL-10 01-JAN-10                                                                                                                                   
+17-JUL-10 01-JAN-10                                                                                                                                   
+18-JUL-10 01-JAN-10                                                                                                                                   
+19-JUL-10 01-JAN-10                                                                                                                                   
+19-JUL-10 01-JAN-10                                                                                                                                   
+22-JUL-10 01-JAN-10                                                                                                                                   
+23-JUL-10 01-JAN-10                                                                                                                                   
+24-JUL-10 01-JAN-10                                                                                                                                   
+25-JUL-10 01-JAN-10                                                                                                                                   
+26-JUL-10 01-JAN-10                                                                                                                                   
+29-JUL-10 01-JAN-10                                                                                                                                   
+30-JUL-10 01-JAN-10                                                                                                                                   
+31-JUL-10 01-JAN-10                                                                                                                                   
+01-AUG-10 01-JAN-10                                                                                                                                   
+01-AUG-10 01-JAN-10                                                                                                                                   
+02-AUG-10 01-JAN-10                                                                                                                                   
+05-AUG-10 01-JAN-10                                                                                                                                   
+06-AUG-10 01-JAN-10                                                                                                                                   
+07-AUG-10 01-JAN-10                                                                                                                                   
+08-AUG-10 01-JAN-10                                                                                                                                   
+09-AUG-10 01-JAN-10                                                                                                                                   
+12-AUG-10 01-JAN-10                                                                                                                                   
+13-AUG-10 01-JAN-10                                                                                                                                   
+14-AUG-10 01-JAN-10                                                                                                                                   
+14-AUG-10 01-JAN-10                                                                                                                                   
+15-AUG-10 01-JAN-10                                                                                                                                   
+16-AUG-10 01-JAN-10                                                                                                                                   
+19-AUG-10 01-JAN-10                                                                                                                                   
+20-AUG-10 01-JAN-10                                                                                                                                   
+21-AUG-10 01-JAN-10                                                                                                                                   
+22-AUG-10 01-JAN-10                                                                                                                                   
+23-AUG-10 01-JAN-10                                                                                                                                   
+26-AUG-10 01-JAN-10                                                                                                                                   
+27-AUG-10 01-JAN-10                                                                                                                                   
+27-AUG-10 01-JAN-10                                                                                                                                   
+28-AUG-10 01-JAN-10                                                                                                                                   
+29-AUG-10 01-JAN-10                                                                                                                                   
+30-AUG-10 01-JAN-10                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+02-SEP-10 01-JAN-10                                                                                                                                   
+03-SEP-10 01-JAN-10                                                                                                                                   
+04-SEP-10 01-JAN-10                                                                                                                                   
+05-SEP-10 01-JAN-10                                                                                                                                   
+06-SEP-10 01-JAN-10                                                                                                                                   
+09-SEP-10 01-JAN-10                                                                                                                                   
+09-SEP-10 01-JAN-10                                                                                                                                   
+10-SEP-10 01-JAN-10                                                                                                                                   
+11-SEP-10 01-JAN-10                                                                                                                                   
+12-SEP-10 01-JAN-10                                                                                                                                   
+13-SEP-10 01-JAN-10                                                                                                                                   
+16-SEP-10 01-JAN-10                                                                                                                                   
+17-SEP-10 01-JAN-10                                                                                                                                   
+18-SEP-10 01-JAN-10                                                                                                                                   
+19-SEP-10 01-JAN-10                                                                                                                                   
+20-SEP-10 01-JAN-10                                                                                                                                   
+20-SEP-10 01-JAN-10                                                                                                                                   
+23-SEP-10 01-JAN-10                                                                                                                                   
+24-SEP-10 01-JAN-10                                                                                                                                   
+25-SEP-10 01-JAN-10                                                                                                                                   
+26-SEP-10 01-JAN-10                                                                                                                                   
+27-SEP-10 01-JAN-10                                                                                                                                   
+30-SEP-10 01-JAN-10                                                                                                                                   
+01-OCT-10 01-JAN-10                                                                                                                                   
+02-OCT-10 01-JAN-10                                                                                                                                   
+03-OCT-10 01-JAN-10                                                                                                                                   
+03-OCT-10 01-JAN-10                                                                                                                                   
+04-OCT-10 01-JAN-10                                                                                                                                   
+07-OCT-10 01-JAN-10                                                                                                                                   
+08-OCT-10 01-JAN-10                                                                                                                                   
+09-OCT-10 01-JAN-10                                                                                                                                   
+10-OCT-10 01-JAN-10                                                                                                                                   
+11-OCT-10 01-JAN-10                                                                                                                                   
+14-OCT-10 01-JAN-10                                                                                                                                   
+15-OCT-10 01-JAN-10                                                                                                                                   
+16-OCT-10 01-JAN-10                                                                                                                                   
+16-OCT-10 01-JAN-10                                                                                                                                   
+17-OCT-10 01-JAN-10                                                                                                                                   
+18-OCT-10 01-JAN-10                                                                                                                                   
+21-OCT-10 01-JAN-10                                                                                                                                   
+22-OCT-10 01-JAN-10                                                                                                                                   
+23-OCT-10 01-JAN-10                                                                                                                                   
+24-OCT-10 01-JAN-10                                                                                                                                   
+25-OCT-10 01-JAN-10                                                                                                                                   
+28-OCT-10 01-JAN-10                                                                                                                                   
+29-OCT-10 01-JAN-10                                                                                                                                   
+29-OCT-10 01-JAN-10                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+30-OCT-10 01-JAN-10                                                                                                                                   
+31-OCT-10 01-JAN-10                                                                                                                                   
+01-NOV-10 01-JAN-10                                                                                                                                   
+04-NOV-10 01-JAN-10                                                                                                                                   
+05-NOV-10 01-JAN-10                                                                                                                                   
+06-NOV-10 01-JAN-10                                                                                                                                   
+07-NOV-10 01-JAN-10                                                                                                                                   
+08-NOV-10 01-JAN-10                                                                                                                                   
+11-NOV-10 01-JAN-10                                                                                                                                   
+11-NOV-10 01-JAN-10                                                                                                                                   
+12-NOV-10 01-JAN-10                                                                                                                                   
+13-NOV-10 01-JAN-10                                                                                                                                   
+14-NOV-10 01-JAN-10                                                                                                                                   
+15-NOV-10 01-JAN-10                                                                                                                                   
+18-NOV-10 01-JAN-10                                                                                                                                   
+19-NOV-10 01-JAN-10                                                                                                                                   
+20-NOV-10 01-JAN-10                                                                                                                                   
+21-NOV-10 01-JAN-10                                                                                                                                   
+22-NOV-10 01-JAN-10                                                                                                                                   
+22-NOV-10 01-JAN-10                                                                                                                                   
+25-NOV-10 01-JAN-10                                                                                                                                   
+26-NOV-10 01-JAN-10                                                                                                                                   
+26-NOV-10 01-JAN-10                                                                                                                                   
+27-NOV-10 01-JAN-10                                                                                                                                   
+28-NOV-10 01-JAN-10                                                                                                                                   
+28-NOV-10 01-JAN-10                                                                                                                                   
+29-NOV-10 01-JAN-10                                                                                                                                   
+02-DEC-10 01-JAN-10                                                                                                                                   
+03-DEC-10 01-JAN-10                                                                                                                                   
+03-DEC-10 01-JAN-10                                                                                                                                   
+04-DEC-10 01-JAN-10                                                                                                                                   
+05-DEC-10 01-JAN-10                                                                                                                                   
+05-DEC-10 01-JAN-10                                                                                                                                   
+06-DEC-10 01-JAN-10                                                                                                                                   
+09-DEC-10 01-JAN-10                                                                                                                                   
+09-DEC-10 01-JAN-10                                                                                                                                   
+10-DEC-10 01-JAN-10                                                                                                                                   
+11-DEC-10 01-JAN-10                                                                                                                                   
+12-DEC-10 01-JAN-10                                                                                                                                   
+12-DEC-10 01-JAN-10                                                                                                                                   
+13-DEC-10 01-JAN-10                                                                                                                                   
+16-DEC-10 01-JAN-10                                                                                                                                   
+16-DEC-10 01-JAN-10                                                                                                                                   
+17-DEC-10 01-JAN-10                                                                                                                                   
+18-DEC-10 01-JAN-10                                                                                                                                   
+18-DEC-10 01-JAN-10                                                                                                                                   
+19-DEC-10 01-JAN-10                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+20-DEC-10 01-JAN-10                                                                                                                                   
+23-DEC-10 01-JAN-10                                                                                                                                   
+23-DEC-10 01-JAN-10                                                                                                                                   
+24-DEC-10 01-JAN-10                                                                                                                                   
+25-DEC-10 01-JAN-10                                                                                                                                   
+25-DEC-10 01-JAN-10                                                                                                                                   
+26-DEC-10 01-JAN-10                                                                                                                                   
+27-DEC-10 01-JAN-10                                                                                                                                   
+27-DEC-10 01-JAN-10                                                                                                                                   
+30-DEC-10 01-JAN-10                                                                                                                                   
+31-DEC-10 01-JAN-10                                                                                                                                   
+01-JAN-11 01-JAN-11                                                                                                                                   
+01-JAN-11 01-JAN-11                                                                                                                                   
+02-JAN-11 01-JAN-11                                                                                                                                   
+03-JAN-11 01-JAN-11                                                                                                                                   
+03-JAN-11 01-JAN-11                                                                                                                                   
+06-JAN-11 01-JAN-11                                                                                                                                   
+07-JAN-11 01-JAN-11                                                                                                                                   
+07-JAN-11 01-JAN-11                                                                                                                                   
+08-JAN-11 01-JAN-11                                                                                                                                   
+09-JAN-11 01-JAN-11                                                                                                                                   
+10-JAN-11 01-JAN-11                                                                                                                                   
+10-JAN-11 01-JAN-11                                                                                                                                   
+13-JAN-11 01-JAN-11                                                                                                                                   
+14-JAN-11 01-JAN-11                                                                                                                                   
+14-JAN-11 01-JAN-11                                                                                                                                   
+15-JAN-11 01-JAN-11                                                                                                                                   
+16-JAN-11 01-JAN-11                                                                                                                                   
+16-JAN-11 01-JAN-11                                                                                                                                   
+17-JAN-11 01-JAN-11                                                                                                                                   
+20-JAN-11 01-JAN-11                                                                                                                                   
+21-JAN-11 01-JAN-11                                                                                                                                   
+21-JAN-11 01-JAN-11                                                                                                                                   
+22-JAN-11 01-JAN-11                                                                                                                                   
+23-JAN-11 01-JAN-11                                                                                                                                   
+23-JAN-11 01-JAN-11                                                                                                                                   
+24-JAN-11 01-JAN-11                                                                                                                                   
+27-JAN-11 01-JAN-11                                                                                                                                   
+27-JAN-11 01-JAN-11                                                                                                                                   
+28-JAN-11 01-JAN-11                                                                                                                                   
+29-JAN-11 01-JAN-11                                                                                                                                   
+30-JAN-11 01-JAN-11                                                                                                                                   
+30-JAN-11 01-JAN-11                                                                                                                                   
+31-JAN-11 01-JAN-11                                                                                                                                   
+03-FEB-11 01-JAN-11                                                                                                                                   
+03-FEB-11 01-JAN-11                                                                                                                                   
+04-FEB-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+05-FEB-11 01-JAN-11                                                                                                                                   
+05-FEB-11 01-JAN-11                                                                                                                                   
+06-FEB-11 01-JAN-11                                                                                                                                   
+07-FEB-11 01-JAN-11                                                                                                                                   
+10-FEB-11 01-JAN-11                                                                                                                                   
+10-FEB-11 01-JAN-11                                                                                                                                   
+11-FEB-11 01-JAN-11                                                                                                                                   
+12-FEB-11 01-JAN-11                                                                                                                                   
+12-FEB-11 01-JAN-11                                                                                                                                   
+13-FEB-11 01-JAN-11                                                                                                                                   
+14-FEB-11 01-JAN-11                                                                                                                                   
+14-FEB-11 01-JAN-11                                                                                                                                   
+17-FEB-11 01-JAN-11                                                                                                                                   
+18-FEB-11 01-JAN-11                                                                                                                                   
+19-FEB-11 01-JAN-11                                                                                                                                   
+19-FEB-11 01-JAN-11                                                                                                                                   
+20-FEB-11 01-JAN-11                                                                                                                                   
+21-FEB-11 01-JAN-11                                                                                                                                   
+21-FEB-11 01-JAN-11                                                                                                                                   
+24-FEB-11 01-JAN-11                                                                                                                                   
+25-FEB-11 01-JAN-11                                                                                                                                   
+25-FEB-11 01-JAN-11                                                                                                                                   
+26-FEB-11 01-JAN-11                                                                                                                                   
+27-FEB-11 01-JAN-11                                                                                                                                   
+28-FEB-11 01-JAN-11                                                                                                                                   
+28-FEB-11 01-JAN-11                                                                                                                                   
+03-MAR-11 01-JAN-11                                                                                                                                   
+04-MAR-11 01-JAN-11                                                                                                                                   
+04-MAR-11 01-JAN-11                                                                                                                                   
+05-MAR-11 01-JAN-11                                                                                                                                   
+06-MAR-11 01-JAN-11                                                                                                                                   
+06-MAR-11 01-JAN-11                                                                                                                                   
+07-MAR-11 01-JAN-11                                                                                                                                   
+10-MAR-11 01-JAN-11                                                                                                                                   
+11-MAR-11 01-JAN-11                                                                                                                                   
+11-MAR-11 01-JAN-11                                                                                                                                   
+12-MAR-11 01-JAN-11                                                                                                                                   
+13-MAR-11 01-JAN-11                                                                                                                                   
+13-MAR-11 01-JAN-11                                                                                                                                   
+14-MAR-11 01-JAN-11                                                                                                                                   
+17-MAR-11 01-JAN-11                                                                                                                                   
+17-MAR-11 01-JAN-11                                                                                                                                   
+18-MAR-11 01-JAN-11                                                                                                                                   
+19-MAR-11 01-JAN-11                                                                                                                                   
+20-MAR-11 01-JAN-11                                                                                                                                   
+20-MAR-11 01-JAN-11                                                                                                                                   
+21-MAR-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+24-MAR-11 01-JAN-11                                                                                                                                   
+24-MAR-11 01-JAN-11                                                                                                                                   
+25-MAR-11 01-JAN-11                                                                                                                                   
+26-MAR-11 01-JAN-11                                                                                                                                   
+26-MAR-11 01-JAN-11                                                                                                                                   
+27-MAR-11 01-JAN-11                                                                                                                                   
+28-MAR-11 01-JAN-11                                                                                                                                   
+31-MAR-11 01-JAN-11                                                                                                                                   
+31-MAR-11 01-JAN-11                                                                                                                                   
+01-APR-11 01-JAN-11                                                                                                                                   
+02-APR-11 01-JAN-11                                                                                                                                   
+02-APR-11 01-JAN-11                                                                                                                                   
+03-APR-11 01-JAN-11                                                                                                                                   
+04-APR-11 01-JAN-11                                                                                                                                   
+04-APR-11 01-JAN-11                                                                                                                                   
+07-APR-11 01-JAN-11                                                                                                                                   
+08-APR-11 01-JAN-11                                                                                                                                   
+09-APR-11 01-JAN-11                                                                                                                                   
+09-APR-11 01-JAN-11                                                                                                                                   
+10-APR-11 01-JAN-11                                                                                                                                   
+11-APR-11 01-JAN-11                                                                                                                                   
+11-APR-11 01-JAN-11                                                                                                                                   
+14-APR-11 01-JAN-11                                                                                                                                   
+15-APR-11 01-JAN-11                                                                                                                                   
+15-APR-11 01-JAN-11                                                                                                                                   
+16-APR-11 01-JAN-11                                                                                                                                   
+17-APR-11 01-JAN-11                                                                                                                                   
+18-APR-11 01-JAN-11                                                                                                                                   
+18-APR-11 01-JAN-11                                                                                                                                   
+21-APR-11 01-JAN-11                                                                                                                                   
+22-APR-11 01-JAN-11                                                                                                                                   
+22-APR-11 01-JAN-11                                                                                                                                   
+23-APR-11 01-JAN-11                                                                                                                                   
+24-APR-11 01-JAN-11                                                                                                                                   
+24-APR-11 01-JAN-11                                                                                                                                   
+25-APR-11 01-JAN-11                                                                                                                                   
+28-APR-11 01-JAN-11                                                                                                                                   
+29-APR-11 01-JAN-11                                                                                                                                   
+29-APR-11 01-JAN-11                                                                                                                                   
+30-APR-11 01-JAN-11                                                                                                                                   
+01-MAY-11 01-JAN-11                                                                                                                                   
+01-MAY-11 01-JAN-11                                                                                                                                   
+02-MAY-11 01-JAN-11                                                                                                                                   
+05-MAY-11 01-JAN-11                                                                                                                                   
+05-MAY-11 01-JAN-11                                                                                                                                   
+06-MAY-11 01-JAN-11                                                                                                                                   
+07-MAY-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+08-MAY-11 01-JAN-11                                                                                                                                   
+08-MAY-11 01-JAN-11                                                                                                                                   
+09-MAY-11 01-JAN-11                                                                                                                                   
+12-MAY-11 01-JAN-11                                                                                                                                   
+12-MAY-11 01-JAN-11                                                                                                                                   
+13-MAY-11 01-JAN-11                                                                                                                                   
+14-MAY-11 01-JAN-11                                                                                                                                   
+14-MAY-11 01-JAN-11                                                                                                                                   
+15-MAY-11 01-JAN-11                                                                                                                                   
+16-MAY-11 01-JAN-11                                                                                                                                   
+19-MAY-11 01-JAN-11                                                                                                                                   
+19-MAY-11 01-JAN-11                                                                                                                                   
+20-MAY-11 01-JAN-11                                                                                                                                   
+21-MAY-11 01-JAN-11                                                                                                                                   
+21-MAY-11 01-JAN-11                                                                                                                                   
+22-MAY-11 01-JAN-11                                                                                                                                   
+23-MAY-11 01-JAN-11                                                                                                                                   
+23-MAY-11 01-JAN-11                                                                                                                                   
+26-MAY-11 01-JAN-11                                                                                                                                   
+27-MAY-11 01-JAN-11                                                                                                                                   
+28-MAY-11 01-JAN-11                                                                                                                                   
+28-MAY-11 01-JAN-11                                                                                                                                   
+29-MAY-11 01-JAN-11                                                                                                                                   
+30-MAY-11 01-JAN-11                                                                                                                                   
+30-MAY-11 01-JAN-11                                                                                                                                   
+02-JUN-11 01-JAN-11                                                                                                                                   
+03-JUN-11 01-JAN-11                                                                                                                                   
+03-JUN-11 01-JAN-11                                                                                                                                   
+04-JUN-11 01-JAN-11                                                                                                                                   
+05-JUN-11 01-JAN-11                                                                                                                                   
+06-JUN-11 01-JAN-11                                                                                                                                   
+06-JUN-11 01-JAN-11                                                                                                                                   
+09-JUN-11 01-JAN-11                                                                                                                                   
+10-JUN-11 01-JAN-11                                                                                                                                   
+10-JUN-11 01-JAN-11                                                                                                                                   
+11-JUN-11 01-JAN-11                                                                                                                                   
+12-JUN-11 01-JAN-11                                                                                                                                   
+12-JUN-11 01-JAN-11                                                                                                                                   
+13-JUN-11 01-JAN-11                                                                                                                                   
+16-JUN-11 01-JAN-11                                                                                                                                   
+17-JUN-11 01-JAN-11                                                                                                                                   
+17-JUN-11 01-JAN-11                                                                                                                                   
+18-JUN-11 01-JAN-11                                                                                                                                   
+19-JUN-11 01-JAN-11                                                                                                                                   
+19-JUN-11 01-JAN-11                                                                                                                                   
+20-JUN-11 01-JAN-11                                                                                                                                   
+23-JUN-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+23-JUN-11 01-JAN-11                                                                                                                                   
+24-JUN-11 01-JAN-11                                                                                                                                   
+25-JUN-11 01-JAN-11                                                                                                                                   
+26-JUN-11 01-JAN-11                                                                                                                                   
+26-JUN-11 01-JAN-11                                                                                                                                   
+27-JUN-11 01-JAN-11                                                                                                                                   
+30-JUN-11 01-JAN-11                                                                                                                                   
+30-JUN-11 01-JAN-11                                                                                                                                   
+01-JUL-11 01-JAN-11                                                                                                                                   
+02-JUL-11 01-JAN-11                                                                                                                                   
+02-JUL-11 01-JAN-11                                                                                                                                   
+03-JUL-11 01-JAN-11                                                                                                                                   
+04-JUL-11 01-JAN-11                                                                                                                                   
+07-JUL-11 01-JAN-11                                                                                                                                   
+07-JUL-11 01-JAN-11                                                                                                                                   
+08-JUL-11 01-JAN-11                                                                                                                                   
+09-JUL-11 01-JAN-11                                                                                                                                   
+09-JUL-11 01-JAN-11                                                                                                                                   
+10-JUL-11 01-JAN-11                                                                                                                                   
+11-JUL-11 01-JAN-11                                                                                                                                   
+11-JUL-11 01-JAN-11                                                                                                                                   
+14-JUL-11 01-JAN-11                                                                                                                                   
+15-JUL-11 01-JAN-11                                                                                                                                   
+16-JUL-11 01-JAN-11                                                                                                                                   
+16-JUL-11 01-JAN-11                                                                                                                                   
+17-JUL-11 01-JAN-11                                                                                                                                   
+18-JUL-11 01-JAN-11                                                                                                                                   
+18-JUL-11 01-JAN-11                                                                                                                                   
+21-JUL-11 01-JAN-11                                                                                                                                   
+22-JUL-11 01-JAN-11                                                                                                                                   
+22-JUL-11 01-JAN-11                                                                                                                                   
+23-JUL-11 01-JAN-11                                                                                                                                   
+24-JUL-11 01-JAN-11                                                                                                                                   
+25-JUL-11 01-JAN-11                                                                                                                                   
+25-JUL-11 01-JAN-11                                                                                                                                   
+28-JUL-11 01-JAN-11                                                                                                                                   
+29-JUL-11 01-JAN-11                                                                                                                                   
+29-JUL-11 01-JAN-11                                                                                                                                   
+30-JUL-11 01-JAN-11                                                                                                                                   
+31-JUL-11 01-JAN-11                                                                                                                                   
+31-JUL-11 01-JAN-11                                                                                                                                   
+01-AUG-11 01-JAN-11                                                                                                                                   
+04-AUG-11 01-JAN-11                                                                                                                                   
+05-AUG-11 01-JAN-11                                                                                                                                   
+05-AUG-11 01-JAN-11                                                                                                                                   
+06-AUG-11 01-JAN-11                                                                                                                                   
+07-AUG-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+07-AUG-11 01-JAN-11                                                                                                                                   
+08-AUG-11 01-JAN-11                                                                                                                                   
+11-AUG-11 01-JAN-11                                                                                                                                   
+11-AUG-11 01-JAN-11                                                                                                                                   
+12-AUG-11 01-JAN-11                                                                                                                                   
+12-AUG-11 01-JAN-11                                                                                                                                   
+13-AUG-11 01-JAN-11                                                                                                                                   
+14-AUG-11 01-JAN-11                                                                                                                                   
+14-AUG-11 01-JAN-11                                                                                                                                   
+15-AUG-11 01-JAN-11                                                                                                                                   
+15-AUG-11 01-JAN-11                                                                                                                                   
+18-AUG-11 01-JAN-11                                                                                                                                   
+19-AUG-11 01-JAN-11                                                                                                                                   
+19-AUG-11 01-JAN-11                                                                                                                                   
+20-AUG-11 01-JAN-11                                                                                                                                   
+20-AUG-11 01-JAN-11                                                                                                                                   
+21-AUG-11 01-JAN-11                                                                                                                                   
+22-AUG-11 01-JAN-11                                                                                                                                   
+22-AUG-11 01-JAN-11                                                                                                                                   
+25-AUG-11 01-JAN-11                                                                                                                                   
+25-AUG-11 01-JAN-11                                                                                                                                   
+26-AUG-11 01-JAN-11                                                                                                                                   
+27-AUG-11 01-JAN-11                                                                                                                                   
+27-AUG-11 01-JAN-11                                                                                                                                   
+28-AUG-11 01-JAN-11                                                                                                                                   
+28-AUG-11 01-JAN-11                                                                                                                                   
+29-AUG-11 01-JAN-11                                                                                                                                   
+01-SEP-11 01-JAN-11                                                                                                                                   
+01-SEP-11 01-JAN-11                                                                                                                                   
+02-SEP-11 01-JAN-11                                                                                                                                   
+02-SEP-11 01-JAN-11                                                                                                                                   
+03-SEP-11 01-JAN-11                                                                                                                                   
+04-SEP-11 01-JAN-11                                                                                                                                   
+04-SEP-11 01-JAN-11                                                                                                                                   
+05-SEP-11 01-JAN-11                                                                                                                                   
+05-SEP-11 01-JAN-11                                                                                                                                   
+08-SEP-11 01-JAN-11                                                                                                                                   
+09-SEP-11 01-JAN-11                                                                                                                                   
+09-SEP-11 01-JAN-11                                                                                                                                   
+10-SEP-11 01-JAN-11                                                                                                                                   
+10-SEP-11 01-JAN-11                                                                                                                                   
+11-SEP-11 01-JAN-11                                                                                                                                   
+12-SEP-11 01-JAN-11                                                                                                                                   
+12-SEP-11 01-JAN-11                                                                                                                                   
+15-SEP-11 01-JAN-11                                                                                                                                   
+15-SEP-11 01-JAN-11                                                                                                                                   
+16-SEP-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+17-SEP-11 01-JAN-11                                                                                                                                   
+17-SEP-11 01-JAN-11                                                                                                                                   
+18-SEP-11 01-JAN-11                                                                                                                                   
+18-SEP-11 01-JAN-11                                                                                                                                   
+19-SEP-11 01-JAN-11                                                                                                                                   
+22-SEP-11 01-JAN-11                                                                                                                                   
+22-SEP-11 01-JAN-11                                                                                                                                   
+23-SEP-11 01-JAN-11                                                                                                                                   
+23-SEP-11 01-JAN-11                                                                                                                                   
+24-SEP-11 01-JAN-11                                                                                                                                   
+25-SEP-11 01-JAN-11                                                                                                                                   
+25-SEP-11 01-JAN-11                                                                                                                                   
+26-SEP-11 01-JAN-11                                                                                                                                   
+26-SEP-11 01-JAN-11                                                                                                                                   
+29-SEP-11 01-JAN-11                                                                                                                                   
+30-SEP-11 01-JAN-11                                                                                                                                   
+30-SEP-11 01-JAN-11                                                                                                                                   
+01-OCT-11 01-JAN-11                                                                                                                                   
+01-OCT-11 01-JAN-11                                                                                                                                   
+02-OCT-11 01-JAN-11                                                                                                                                   
+03-OCT-11 01-JAN-11                                                                                                                                   
+03-OCT-11 01-JAN-11                                                                                                                                   
+06-OCT-11 01-JAN-11                                                                                                                                   
+06-OCT-11 01-JAN-11                                                                                                                                   
+07-OCT-11 01-JAN-11                                                                                                                                   
+08-OCT-11 01-JAN-11                                                                                                                                   
+08-OCT-11 01-JAN-11                                                                                                                                   
+09-OCT-11 01-JAN-11                                                                                                                                   
+09-OCT-11 01-JAN-11                                                                                                                                   
+10-OCT-11 01-JAN-11                                                                                                                                   
+13-OCT-11 01-JAN-11                                                                                                                                   
+13-OCT-11 01-JAN-11                                                                                                                                   
+14-OCT-11 01-JAN-11                                                                                                                                   
+14-OCT-11 01-JAN-11                                                                                                                                   
+15-OCT-11 01-JAN-11                                                                                                                                   
+16-OCT-11 01-JAN-11                                                                                                                                   
+16-OCT-11 01-JAN-11                                                                                                                                   
+17-OCT-11 01-JAN-11                                                                                                                                   
+17-OCT-11 01-JAN-11                                                                                                                                   
+20-OCT-11 01-JAN-11                                                                                                                                   
+21-OCT-11 01-JAN-11                                                                                                                                   
+21-OCT-11 01-JAN-11                                                                                                                                   
+22-OCT-11 01-JAN-11                                                                                                                                   
+22-OCT-11 01-JAN-11                                                                                                                                   
+23-OCT-11 01-JAN-11                                                                                                                                   
+24-OCT-11 01-JAN-11                                                                                                                                   
+24-OCT-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+27-OCT-11 01-JAN-11                                                                                                                                   
+27-OCT-11 01-JAN-11                                                                                                                                   
+28-OCT-11 01-JAN-11                                                                                                                                   
+29-OCT-11 01-JAN-11                                                                                                                                   
+29-OCT-11 01-JAN-11                                                                                                                                   
+30-OCT-11 01-JAN-11                                                                                                                                   
+30-OCT-11 01-JAN-11                                                                                                                                   
+31-OCT-11 01-JAN-11                                                                                                                                   
+03-NOV-11 01-JAN-11                                                                                                                                   
+03-NOV-11 01-JAN-11                                                                                                                                   
+04-NOV-11 01-JAN-11                                                                                                                                   
+04-NOV-11 01-JAN-11                                                                                                                                   
+05-NOV-11 01-JAN-11                                                                                                                                   
+06-NOV-11 01-JAN-11                                                                                                                                   
+06-NOV-11 01-JAN-11                                                                                                                                   
+07-NOV-11 01-JAN-11                                                                                                                                   
+07-NOV-11 01-JAN-11                                                                                                                                   
+10-NOV-11 01-JAN-11                                                                                                                                   
+11-NOV-11 01-JAN-11                                                                                                                                   
+11-NOV-11 01-JAN-11                                                                                                                                   
+12-NOV-11 01-JAN-11                                                                                                                                   
+12-NOV-11 01-JAN-11                                                                                                                                   
+13-NOV-11 01-JAN-11                                                                                                                                   
+14-NOV-11 01-JAN-11                                                                                                                                   
+14-NOV-11 01-JAN-11                                                                                                                                   
+17-NOV-11 01-JAN-11                                                                                                                                   
+17-NOV-11 01-JAN-11                                                                                                                                   
+18-NOV-11 01-JAN-11                                                                                                                                   
+19-NOV-11 01-JAN-11                                                                                                                                   
+19-NOV-11 01-JAN-11                                                                                                                                   
+20-NOV-11 01-JAN-11                                                                                                                                   
+20-NOV-11 01-JAN-11                                                                                                                                   
+21-NOV-11 01-JAN-11                                                                                                                                   
+24-NOV-11 01-JAN-11                                                                                                                                   
+24-NOV-11 01-JAN-11                                                                                                                                   
+25-NOV-11 01-JAN-11                                                                                                                                   
+25-NOV-11 01-JAN-11                                                                                                                                   
+26-NOV-11 01-JAN-11                                                                                                                                   
+27-NOV-11 01-JAN-11                                                                                                                                   
+27-NOV-11 01-JAN-11                                                                                                                                   
+28-NOV-11 01-JAN-11                                                                                                                                   
+28-NOV-11 01-JAN-11                                                                                                                                   
+01-DEC-11 01-JAN-11                                                                                                                                   
+02-DEC-11 01-JAN-11                                                                                                                                   
+02-DEC-11 01-JAN-11                                                                                                                                   
+03-DEC-11 01-JAN-11                                                                                                                                   
+03-DEC-11 01-JAN-11                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+04-DEC-11 01-JAN-11                                                                                                                                   
+05-DEC-11 01-JAN-11                                                                                                                                   
+05-DEC-11 01-JAN-11                                                                                                                                   
+08-DEC-11 01-JAN-11                                                                                                                                   
+08-DEC-11 01-JAN-11                                                                                                                                   
+09-DEC-11 01-JAN-11                                                                                                                                   
+10-DEC-11 01-JAN-11                                                                                                                                   
+10-DEC-11 01-JAN-11                                                                                                                                   
+11-DEC-11 01-JAN-11                                                                                                                                   
+11-DEC-11 01-JAN-11                                                                                                                                   
+12-DEC-11 01-JAN-11                                                                                                                                   
+15-DEC-11 01-JAN-11                                                                                                                                   
+15-DEC-11 01-JAN-11                                                                                                                                   
+16-DEC-11 01-JAN-11                                                                                                                                   
+16-DEC-11 01-JAN-11                                                                                                                                   
+16-DEC-11 01-JAN-11                                                                                                                                   
+17-DEC-11 01-JAN-11                                                                                                                                   
+17-DEC-11 01-JAN-11                                                                                                                                   
+18-DEC-11 01-JAN-11                                                                                                                                   
+18-DEC-11 01-JAN-11                                                                                                                                   
+18-DEC-11 01-JAN-11                                                                                                                                   
+19-DEC-11 01-JAN-11                                                                                                                                   
+19-DEC-11 01-JAN-11                                                                                                                                   
+22-DEC-11 01-JAN-11                                                                                                                                   
+22-DEC-11 01-JAN-11                                                                                                                                   
+22-DEC-11 01-JAN-11                                                                                                                                   
+23-DEC-11 01-JAN-11                                                                                                                                   
+23-DEC-11 01-JAN-11                                                                                                                                   
+24-DEC-11 01-JAN-11                                                                                                                                   
+24-DEC-11 01-JAN-11                                                                                                                                   
+24-DEC-11 01-JAN-11                                                                                                                                   
+25-DEC-11 01-JAN-11                                                                                                                                   
+25-DEC-11 01-JAN-11                                                                                                                                   
+26-DEC-11 01-JAN-11                                                                                                                                   
+26-DEC-11 01-JAN-11                                                                                                                                   
+26-DEC-11 01-JAN-11                                                                                                                                   
+29-DEC-11 01-JAN-11                                                                                                                                   
+29-DEC-11 01-JAN-11                                                                                                                                   
+30-DEC-11 01-JAN-11                                                                                                                                   
+30-DEC-11 01-JAN-11                                                                                                                                   
+30-DEC-11 01-JAN-11                                                                                                                                   
+31-DEC-11 01-JAN-11                                                                                                                                   
+31-DEC-11 01-JAN-11                                                                                                                                   
+01-JAN-12 01-JAN-12                                                                                                                                   
+01-JAN-12 01-JAN-12                                                                                                                                   
+01-JAN-12 01-JAN-12                                                                                                                                   
+02-JAN-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+02-JAN-12 01-JAN-12                                                                                                                                   
+05-JAN-12 01-JAN-12                                                                                                                                   
+05-JAN-12 01-JAN-12                                                                                                                                   
+05-JAN-12 01-JAN-12                                                                                                                                   
+06-JAN-12 01-JAN-12                                                                                                                                   
+06-JAN-12 01-JAN-12                                                                                                                                   
+07-JAN-12 01-JAN-12                                                                                                                                   
+07-JAN-12 01-JAN-12                                                                                                                                   
+07-JAN-12 01-JAN-12                                                                                                                                   
+08-JAN-12 01-JAN-12                                                                                                                                   
+08-JAN-12 01-JAN-12                                                                                                                                   
+09-JAN-12 01-JAN-12                                                                                                                                   
+09-JAN-12 01-JAN-12                                                                                                                                   
+09-JAN-12 01-JAN-12                                                                                                                                   
+12-JAN-12 01-JAN-12                                                                                                                                   
+12-JAN-12 01-JAN-12                                                                                                                                   
+13-JAN-12 01-JAN-12                                                                                                                                   
+13-JAN-12 01-JAN-12                                                                                                                                   
+13-JAN-12 01-JAN-12                                                                                                                                   
+14-JAN-12 01-JAN-12                                                                                                                                   
+14-JAN-12 01-JAN-12                                                                                                                                   
+15-JAN-12 01-JAN-12                                                                                                                                   
+15-JAN-12 01-JAN-12                                                                                                                                   
+15-JAN-12 01-JAN-12                                                                                                                                   
+16-JAN-12 01-JAN-12                                                                                                                                   
+16-JAN-12 01-JAN-12                                                                                                                                   
+19-JAN-12 01-JAN-12                                                                                                                                   
+19-JAN-12 01-JAN-12                                                                                                                                   
+19-JAN-12 01-JAN-12                                                                                                                                   
+20-JAN-12 01-JAN-12                                                                                                                                   
+20-JAN-12 01-JAN-12                                                                                                                                   
+21-JAN-12 01-JAN-12                                                                                                                                   
+21-JAN-12 01-JAN-12                                                                                                                                   
+21-JAN-12 01-JAN-12                                                                                                                                   
+22-JAN-12 01-JAN-12                                                                                                                                   
+22-JAN-12 01-JAN-12                                                                                                                                   
+23-JAN-12 01-JAN-12                                                                                                                                   
+23-JAN-12 01-JAN-12                                                                                                                                   
+23-JAN-12 01-JAN-12                                                                                                                                   
+26-JAN-12 01-JAN-12                                                                                                                                   
+26-JAN-12 01-JAN-12                                                                                                                                   
+27-JAN-12 01-JAN-12                                                                                                                                   
+27-JAN-12 01-JAN-12                                                                                                                                   
+27-JAN-12 01-JAN-12                                                                                                                                   
+28-JAN-12 01-JAN-12                                                                                                                                   
+28-JAN-12 01-JAN-12                                                                                                                                   
+29-JAN-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+29-JAN-12 01-JAN-12                                                                                                                                   
+29-JAN-12 01-JAN-12                                                                                                                                   
+30-JAN-12 01-JAN-12                                                                                                                                   
+30-JAN-12 01-JAN-12                                                                                                                                   
+02-FEB-12 01-JAN-12                                                                                                                                   
+02-FEB-12 01-JAN-12                                                                                                                                   
+02-FEB-12 01-JAN-12                                                                                                                                   
+03-FEB-12 01-JAN-12                                                                                                                                   
+03-FEB-12 01-JAN-12                                                                                                                                   
+04-FEB-12 01-JAN-12                                                                                                                                   
+04-FEB-12 01-JAN-12                                                                                                                                   
+04-FEB-12 01-JAN-12                                                                                                                                   
+05-FEB-12 01-JAN-12                                                                                                                                   
+05-FEB-12 01-JAN-12                                                                                                                                   
+06-FEB-12 01-JAN-12                                                                                                                                   
+06-FEB-12 01-JAN-12                                                                                                                                   
+06-FEB-12 01-JAN-12                                                                                                                                   
+09-FEB-12 01-JAN-12                                                                                                                                   
+09-FEB-12 01-JAN-12                                                                                                                                   
+10-FEB-12 01-JAN-12                                                                                                                                   
+10-FEB-12 01-JAN-12                                                                                                                                   
+10-FEB-12 01-JAN-12                                                                                                                                   
+11-FEB-12 01-JAN-12                                                                                                                                   
+11-FEB-12 01-JAN-12                                                                                                                                   
+12-FEB-12 01-JAN-12                                                                                                                                   
+12-FEB-12 01-JAN-12                                                                                                                                   
+12-FEB-12 01-JAN-12                                                                                                                                   
+13-FEB-12 01-JAN-12                                                                                                                                   
+13-FEB-12 01-JAN-12                                                                                                                                   
+16-FEB-12 01-JAN-12                                                                                                                                   
+16-FEB-12 01-JAN-12                                                                                                                                   
+16-FEB-12 01-JAN-12                                                                                                                                   
+17-FEB-12 01-JAN-12                                                                                                                                   
+17-FEB-12 01-JAN-12                                                                                                                                   
+18-FEB-12 01-JAN-12                                                                                                                                   
+18-FEB-12 01-JAN-12                                                                                                                                   
+18-FEB-12 01-JAN-12                                                                                                                                   
+19-FEB-12 01-JAN-12                                                                                                                                   
+19-FEB-12 01-JAN-12                                                                                                                                   
+20-FEB-12 01-JAN-12                                                                                                                                   
+20-FEB-12 01-JAN-12                                                                                                                                   
+20-FEB-12 01-JAN-12                                                                                                                                   
+23-FEB-12 01-JAN-12                                                                                                                                   
+23-FEB-12 01-JAN-12                                                                                                                                   
+24-FEB-12 01-JAN-12                                                                                                                                   
+24-FEB-12 01-JAN-12                                                                                                                                   
+24-FEB-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+25-FEB-12 01-JAN-12                                                                                                                                   
+25-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+26-FEB-12 01-JAN-12                                                                                                                                   
+27-FEB-12 01-JAN-12                                                                                                                                   
+27-FEB-12 01-JAN-12                                                                                                                                   
+27-FEB-12 01-JAN-12                                                                                                                                   
+02-MAR-12 01-JAN-12                                                                                                                                   
+02-MAR-12 01-JAN-12                                                                                                                                   
+02-MAR-12 01-JAN-12                                                                                                                                   
+03-MAR-12 01-JAN-12                                                                                                                                   
+03-MAR-12 01-JAN-12                                                                                                                                   
+03-MAR-12 01-JAN-12                                                                                                                                   
+03-MAR-12 01-JAN-12                                                                                                                                   
+04-MAR-12 01-JAN-12                                                                                                                                   
+04-MAR-12 01-JAN-12                                                                                                                                   
+04-MAR-12 01-JAN-12                                                                                                                                   
+05-MAR-12 01-JAN-12                                                                                                                                   
+05-MAR-12 01-JAN-12                                                                                                                                   
+05-MAR-12 01-JAN-12                                                                                                                                   
+06-MAR-12 01-JAN-12                                                                                                                                   
+06-MAR-12 01-JAN-12                                                                                                                                   
+06-MAR-12 01-JAN-12                                                                                                                                   
+06-MAR-12 01-JAN-12                                                                                                                                   
+09-MAR-12 01-JAN-12                                                                                                                                   
+09-MAR-12 01-JAN-12                                                                                                                                   
+09-MAR-12 01-JAN-12                                                                                                                                   
+10-MAR-12 01-JAN-12                                                                                                                                   
+10-MAR-12 01-JAN-12                                                                                                                                   
+10-MAR-12 01-JAN-12                                                                                                                                   
+11-MAR-12 01-JAN-12                                                                                                                                   
+11-MAR-12 01-JAN-12                                                                                                                                   
+11-MAR-12 01-JAN-12                                                                                                                                   
+11-MAR-12 01-JAN-12                                                                                                                                   
+12-MAR-12 01-JAN-12                                                                                                                                   
+12-MAR-12 01-JAN-12                                                                                                                                   
+12-MAR-12 01-JAN-12                                                                                                                                   
+13-MAR-12 01-JAN-12                                                                                                                                   
+13-MAR-12 01-JAN-12                                                                                                                                   
+13-MAR-12 01-JAN-12                                                                                                                                   
+16-MAR-12 01-JAN-12                                                                                                                                   
+16-MAR-12 01-JAN-12                                                                                                                                   
+16-MAR-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+16-MAR-12 01-JAN-12                                                                                                                                   
+17-MAR-12 01-JAN-12                                                                                                                                   
+17-MAR-12 01-JAN-12                                                                                                                                   
+17-MAR-12 01-JAN-12                                                                                                                                   
+18-MAR-12 01-JAN-12                                                                                                                                   
+18-MAR-12 01-JAN-12                                                                                                                                   
+18-MAR-12 01-JAN-12                                                                                                                                   
+19-MAR-12 01-JAN-12                                                                                                                                   
+19-MAR-12 01-JAN-12                                                                                                                                   
+19-MAR-12 01-JAN-12                                                                                                                                   
+19-MAR-12 01-JAN-12                                                                                                                                   
+20-MAR-12 01-JAN-12                                                                                                                                   
+20-MAR-12 01-JAN-12                                                                                                                                   
+20-MAR-12 01-JAN-12                                                                                                                                   
+23-MAR-12 01-JAN-12                                                                                                                                   
+23-MAR-12 01-JAN-12                                                                                                                                   
+23-MAR-12 01-JAN-12                                                                                                                                   
+24-MAR-12 01-JAN-12                                                                                                                                   
+24-MAR-12 01-JAN-12                                                                                                                                   
+24-MAR-12 01-JAN-12                                                                                                                                   
+24-MAR-12 01-JAN-12                                                                                                                                   
+25-MAR-12 01-JAN-12                                                                                                                                   
+25-MAR-12 01-JAN-12                                                                                                                                   
+25-MAR-12 01-JAN-12                                                                                                                                   
+26-MAR-12 01-JAN-12                                                                                                                                   
+26-MAR-12 01-JAN-12                                                                                                                                   
+26-MAR-12 01-JAN-12                                                                                                                                   
+27-MAR-12 01-JAN-12                                                                                                                                   
+27-MAR-12 01-JAN-12                                                                                                                                   
+27-MAR-12 01-JAN-12                                                                                                                                   
+27-MAR-12 01-JAN-12                                                                                                                                   
+30-MAR-12 01-JAN-12                                                                                                                                   
+30-MAR-12 01-JAN-12                                                                                                                                   
+30-MAR-12 01-JAN-12                                                                                                                                   
+31-MAR-12 01-JAN-12                                                                                                                                   
+31-MAR-12 01-JAN-12                                                                                                                                   
+31-MAR-12 01-JAN-12                                                                                                                                   
+01-APR-12 01-JAN-12                                                                                                                                   
+01-APR-12 01-JAN-12                                                                                                                                   
+01-APR-12 01-JAN-12                                                                                                                                   
+01-APR-12 01-JAN-12                                                                                                                                   
+02-APR-12 01-JAN-12                                                                                                                                   
+02-APR-12 01-JAN-12                                                                                                                                   
+02-APR-12 01-JAN-12                                                                                                                                   
+03-APR-12 01-JAN-12                                                                                                                                   
+03-APR-12 01-JAN-12                                                                                                                                   
+03-APR-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+06-APR-12 01-JAN-12                                                                                                                                   
+06-APR-12 01-JAN-12                                                                                                                                   
+06-APR-12 01-JAN-12                                                                                                                                   
+06-APR-12 01-JAN-12                                                                                                                                   
+07-APR-12 01-JAN-12                                                                                                                                   
+07-APR-12 01-JAN-12                                                                                                                                   
+07-APR-12 01-JAN-12                                                                                                                                   
+08-APR-12 01-JAN-12                                                                                                                                   
+08-APR-12 01-JAN-12                                                                                                                                   
+08-APR-12 01-JAN-12                                                                                                                                   
+09-APR-12 01-JAN-12                                                                                                                                   
+09-APR-12 01-JAN-12                                                                                                                                   
+09-APR-12 01-JAN-12                                                                                                                                   
+09-APR-12 01-JAN-12                                                                                                                                   
+10-APR-12 01-JAN-12                                                                                                                                   
+10-APR-12 01-JAN-12                                                                                                                                   
+10-APR-12 01-JAN-12                                                                                                                                   
+13-APR-12 01-JAN-12                                                                                                                                   
+13-APR-12 01-JAN-12                                                                                                                                   
+13-APR-12 01-JAN-12                                                                                                                                   
+14-APR-12 01-JAN-12                                                                                                                                   
+14-APR-12 01-JAN-12                                                                                                                                   
+14-APR-12 01-JAN-12                                                                                                                                   
+14-APR-12 01-JAN-12                                                                                                                                   
+15-APR-12 01-JAN-12                                                                                                                                   
+15-APR-12 01-JAN-12                                                                                                                                   
+15-APR-12 01-JAN-12                                                                                                                                   
+16-APR-12 01-JAN-12                                                                                                                                   
+16-APR-12 01-JAN-12                                                                                                                                   
+16-APR-12 01-JAN-12                                                                                                                                   
+17-APR-12 01-JAN-12                                                                                                                                   
+17-APR-12 01-JAN-12                                                                                                                                   
+17-APR-12 01-JAN-12                                                                                                                                   
+17-APR-12 01-JAN-12                                                                                                                                   
+20-APR-12 01-JAN-12                                                                                                                                   
+20-APR-12 01-JAN-12                                                                                                                                   
+20-APR-12 01-JAN-12                                                                                                                                   
+21-APR-12 01-JAN-12                                                                                                                                   
+21-APR-12 01-JAN-12                                                                                                                                   
+21-APR-12 01-JAN-12                                                                                                                                   
+22-APR-12 01-JAN-12                                                                                                                                   
+22-APR-12 01-JAN-12                                                                                                                                   
+22-APR-12 01-JAN-12                                                                                                                                   
+22-APR-12 01-JAN-12                                                                                                                                   
+23-APR-12 01-JAN-12                                                                                                                                   
+23-APR-12 01-JAN-12                                                                                                                                   
+23-APR-12 01-JAN-12                                                                                                                                   
+
+ORDERDATE TRUNC(ORD                                                                                                                                   
+--------- ---------                                                                                                                                   
+24-APR-12 01-JAN-12                                                                                                                                   
+24-APR-12 01-JAN-12                                                                                                                                   
+24-APR-12 01-JAN-12                                                                                                                                   
+27-APR-12 01-JAN-12                                                                                                                                   
+27-APR-12 01-JAN-12                                                                                                                                   
+27-APR-12 01-JAN-12                                                                                                                                   
+27-APR-12 01-JAN-12                                                                                                                                   
+28-APR-12 01-JAN-12                                                                                                                                   
+28-APR-12 01-JAN-12                                                                                                                                   
+28-APR-12 01-JAN-12                                                                                                                                   
+29-APR-12 01-JAN-12                                                                                                                                   
+29-APR-12 01-JAN-12                                                                                                                                   
+29-APR-12 01-JAN-12                                                                                                                                   
+30-APR-12 01-JAN-12                                                                                                                                   
+30-APR-12 01-JAN-12                                                                                                                                   
+30-APR-12 01-JAN-12                                                                                                                                   
+30-APR-12 01-JAN-12                                                                                                                                   
+01-MAY-12 01-JAN-12                                                                                                                                   
+01-MAY-12 01-JAN-12                                                                                                                                   
+01-MAY-12 01-JAN-12                                                                                                                                   
+04-MAY-12 01-JAN-12                                                                                                                                   
+04-MAY-12 01-JAN-12                                                                                                                                   
+04-MAY-12 01-JAN-12                                                                                                                                   
+05-MAY-12 01-JAN-12                                                                                                                                   
+05-MAY-12 01-JAN-12                                                                                                                                   
+05-MAY-12 01-JAN-12                                                                                                                                   
+05-MAY-12 01-JAN-12                                                                                                                                   
+06-MAY-12 01-JAN-12                                                                                                                                   
+06-MAY-12 01-JAN-12                                                                                                                                   
+06-MAY-12 01-JAN-12                                                                                                                                   
+06-MAY-12 01-JAN-12                                                                                                                                   
+
+830 rows selected.
+
+SQL> --Q2
+SQL> SELECT categoryID || ' - ' || categoryName AS cat,
+  2         COUNT(productID) AS productcount
+  3  FROM products JOIN categories USING (categoryID)
+  4  GROUP BY categoryName, categoryID
+  5  UNION
+  6  SELECT 'Total', COUNT(productID)
+  7  FROM products;
+
+CAT                                                        PRODUCTCOUNT                                                                               
+---------------------------------------------------------- ------------                                                                               
+1 - Beverages                                                        12                                                                               
+2 - Condiments                                                       12                                                                               
+3 - Confections                                                      13                                                                               
+4 - Dairy Products                                                   10                                                                               
+5 - Grains/Cereals                                                    7                                                                               
+6 - Meat/Poultry                                                      6                                                                               
+7 - Produce                                                           5                                                                               
+8 - Seafood                                                          12                                                                               
+Total                                                                77                                                                               
+
+9 rows selected.
+
+SQL> --
+SQL> SELECT categoryID || ' - ' || categoryName AS cat,
+  2         COUNT(productID) AS productcount
+  3  FROM products JOIN categories USING (categoryID)
+  4  GROUP BY ROLLUP (categoryID || ' - ' || categoryName);
+
+CAT                                                        PRODUCTCOUNT                                                                               
+---------------------------------------------------------- ------------                                                                               
+1 - Beverages                                                        12                                                                               
+2 - Condiments                                                       12                                                                               
+3 - Confections                                                      13                                                                               
+4 - Dairy Products                                                   10                                                                               
+5 - Grains/Cereals                                                    7                                                                               
+6 - Meat/Poultry                                                      6                                                                               
+7 - Produce                                                           5                                                                               
+8 - Seafood                                                          12                                                                               
+                                                                     77                                                                               
+
+9 rows selected.
+
+SQL> --
+SQL> SELECT categoryID || ' - ' || categoryName AS cat,
+  2         COUNT(productID) AS productcount
+  3  FROM products JOIN categories USING (categoryID)
+  4  GROUP BY GROUPING SETS ((categoryID || ' - ' || categoryName),());
+
+CAT                                                        PRODUCTCOUNT                                                                               
+---------------------------------------------------------- ------------                                                                               
+1 - Beverages                                                        12                                                                               
+2 - Condiments                                                       12                                                                               
+3 - Confections                                                      13                                                                               
+4 - Dairy Products                                                   10                                                                               
+5 - Grains/Cereals                                                    7                                                                               
+6 - Meat/Poultry                                                      6                                                                               
+7 - Produce                                                           5                                                                               
+8 - Seafood                                                          12                                                                               
+                                                                     77                                                                               
+
+9 rows selected.
+
+SQL> --Q3
+SQL> SELECT shippers.companyName,
+  2         COUNT(DISTINCT customerid) AS numcustomers,
+  3         COUNT(DISTINCT orderid) AS numorders,
+  4     COUNT(productID) AS numproducts
+  5  FROM orders JOIN customers USING (customerid)
+  6              JOIN shippers ON shipvia = shipperid
+  7  JOIN orderdetails USING (orderid)
+  8  WHERE UPPER(country) = 'UK'
+  9  GROUP BY shippers.companyName;
+
+COMPANYNAME                              NUMCUSTOMERS  NUMORDERS NUMPRODUCTS                                                                          
+---------------------------------------- ------------ ---------- -----------                                                                          
+Federal Shipping                                    6         22          50                                                                          
+Speedy Express                                      5         11          30                                                                          
+United Package                                      6         23          55                                                                          
+
+SQL> --Q4
+SQL> SELECT supplierID, categoryName, COUNT(productID)
+  2  FROM   suppliers JOIN products USING (supplierID)
+  3                   JOIN categories USING (categoryID)
+  4  WHERE  supplierid < 11
+  5  GROUP BY supplierID, categoryName
+  6  ORDER BY supplierID;
+
+SUPPLIERID CATEGORYNAME    COUNT(PRODUCTID)                                                                                                           
+---------- --------------- ----------------                                                                                                           
+         1 Beverages                      2                                                                                                           
+         1 Condiments                     1                                                                                                           
+         2 Condiments                     4                                                                                                           
+         3 Condiments                     2                                                                                                           
+         3 Produce                        1                                                                                                           
+         4 Meat/Poultry                   1                                                                                                           
+         4 Produce                        1                                                                                                           
+         4 Seafood                        1                                                                                                           
+         5 Dairy Products                 2                                                                                                           
+         6 Condiments                     1                                                                                                           
+         6 Produce                        1                                                                                                           
+         6 Seafood                        1                                                                                                           
+         7 Beverages                      1                                                                                                           
+         7 Condiments                     1                                                                                                           
+         7 Confections                    1                                                                                                           
+         7 Meat/Poultry                   1                                                                                                           
+         7 Seafood                        1                                                                                                           
+         8 Confections                    4                                                                                                           
+         9 Grains/Cereals                 2                                                                                                           
+        10 Beverages                      1                                                                                                           
+
+20 rows selected.
+
+SQL> --Q5
+SQL> SELECT orderID,
+  2         TO_CHAR(SUM((quantity * unitprice) * (1 - discount)), '$999,999.00')
+  3  FROM   orderdetails
+  4  GROUP BY orderID
+  5  HAVING SUM((quantity * unitprice) * (1 - discount)) > 10000;
+
+   ORDERID TO_CHAR(SUM(                                                                                                                               
+---------- ------------                                                                                                                               
+     10981   $15,810.00                                                                                                                               
+     10540   $10,191.70                                                                                                                               
+     10897   $10,835.24                                                                                                                               
+     10417   $11,188.40                                                                                                                               
+     10889   $11,380.00                                                                                                                               
+     10817   $10,952.85                                                                                                                               
+     10865   $16,387.50                                                                                                                               
+     10479   $10,495.60                                                                                                                               
+     10691   $10,164.80                                                                                                                               
+     11030   $12,615.05                                                                                                                               
+
+10 rows selected.
+
+SQL> --
+SQL> SELECT orderID, sum("Linecost")
+  2  FROM(
+  3       SELECT orderID, productID,
+  4          ((quantity * unitprice) * (1 - discount)) AS "Linecost"
+  5   FROM   orderdetails
+  6  )
+  7  GROUP BY orderID
+  8  HAVING SUM("Linecost") > 10000;
+
+   ORDERID SUM("LINECOST")                                                                                                                            
+---------- ---------------                                                                                                                            
+     10981           15810                                                                                                                            
+     10540         10191.7                                                                                                                            
+     10897        10835.24                                                                                                                            
+     10417         11188.4                                                                                                                            
+     10889           11380                                                                                                                            
+     10817       10952.845                                                                                                                            
+     10865         16387.5                                                                                                                            
+     10479         10495.6                                                                                                                            
+     10691         10164.8                                                                                                                            
+     11030        12615.05                                                                                                                            
+
+10 rows selected.
+
+SQL> --Q6
+SQL> COLUMN emp FORMAT A40
+SQL> SELECT LPAD(' ', LEVEL * 2) ||
+  2         employeeID || ' - ' || lastname || ', ' || firstname AS emp,
+  3         title, reportsto
+  4  FROM   employees
+  5  START WITH employeeID = 2
+  6  CONNECT BY PRIOR employeeID = reportsto;
+
+EMP                                      TITLE                           REPORTSTO                                                                    
+---------------------------------------- ------------------------------ ----------                                                                    
+  2 - Fuller, Andrew                     Vice President, Sales                                                                                        
+    1 - Davolio, Nancy                   Sales Representative                    2                                                                    
+    3 - Leverling, Janet                 Sales Representative                    2                                                                    
+    4 - Peacock, Margaret                Sales Representative                    2                                                                    
+    5 - Buchanan, Steven                 Sales Manager                           2                                                                    
+      6 - Suyama, Michael                Sales Representative                    5                                                                    
+      7 - King, Robert                   Sales Representative                    5                                                                    
+      9 - Dodsworth, Anne                Sales Representative                    5                                                                    
+    8 - Callahan, Laura                  Inside Sales Coordinator                2                                                                    
+
+9 rows selected.
+
+SQL> SPOOL OUT

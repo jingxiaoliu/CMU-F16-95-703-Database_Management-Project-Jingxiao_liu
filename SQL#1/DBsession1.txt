@@ -1,0 +1,8 @@
+SQL> SELECT department_name "Name", state_province state FROM departments, locations WHERE departments.location_ID = locations.location_ID AND country_ID = 'UK';
+
+Name                           STATE                                            
+------------------------------ -------------------------                        
+Human Resources                                                                 
+Sales                          Oxford                                           
+
+SQL> SPOOL OUT
